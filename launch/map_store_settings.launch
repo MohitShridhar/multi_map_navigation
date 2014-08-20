@@ -1,0 +1,27 @@
+<launch>
+
+  <node pkg="map_store" type="map_saver" name="map_saver" output="screen"/>
+  
+  <!-- Map Aligner Setup: Only two maps are required -->
+  <group ns="map_manager/alignment/primary">
+    
+    <include file="$(find sesto_navigation)/launch/map_store.launch">
+      <arg name="frame_id_ref" value="map"/> 
+    </include>
+
+  </group>
+
+  <group ns="map_manager/alignment/secondary">
+
+    <include file="$(find sesto_navigation)/launch/map_store.launch">
+      <arg name="frame_id_ref" value="map"/> 
+    </include>
+
+  </group>
+
+  <!-- RVIZ Aligner Plugin settings: -->
+  <rosparam param="/aligner_namespaces">[
+      "map_manager/alignment/primary", "map_manager/alignment/secondary"
+  ]</rosparam>
+
+</launch>  

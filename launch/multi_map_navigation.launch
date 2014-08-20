@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(find multi_map_navigation)/launch/map_store.launch" />
+  <node pkg="multi_map_navigation" type="multi_map_navigation" name="multi_map_navigation" >
+  	
+  </node>
+</launch>
+

@@ -1,0 +1,5 @@
+# Goal: Target floor to reach to current level
+int32 elevatorTargetFloor 
+string elevatorId
+---
+---

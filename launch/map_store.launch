@@ -1,0 +1,25 @@
+<launch>
+  <node name="mongo" type="mongo_wrapper_ros.py" pkg="warehouse_ros">
+    <param name="overwrite" value="true"/>
+    <param name="database_location" value="warehouse_data"/>
+  </node>
+  <group ns="map_store">
+    <node pkg="map_store" type="map_manager" name="map_manager">
+      <remap from="/map" to="/map_store/map" />
+    </node>
+  </group>
+
+</launch>
+
+
+
+<!--   <node name="mongo" type="mongo_wrapper_ros.py" pkg="warehouse_ros">
+    <param name="overwrite" value="true"/>
+    <param name="database_location" value="/path/to/my/db"/>
+  </node> -->
+
+<!--   <node name="mongo" type="wrapper.py" pkg="mongodb">
+    <param name="database_path" value="warehouse_data"/>
+    <param name="overwrite" value="false"/>
+  </node> -->
+

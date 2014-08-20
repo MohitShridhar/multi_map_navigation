@@ -1,0 +1,6 @@
+geometry_msgs/PoseStamped target_pose
+string goal_map
+---
+---
+geometry_msgs/PoseStamped base_position
+string current_map
