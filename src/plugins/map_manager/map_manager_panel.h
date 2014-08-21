@@ -46,7 +46,7 @@ class QFileDialog;
 
 #define NAMESPACE_TOPIC "/rviz_mux/control"
 
-namespace sesto_rviz_plugins
+namespace rviz
 {
 
   class MapManager: public rviz::Panel

@@ -35,17 +35,17 @@ class QLabel;
 #define MOVE_GOAL_SERVER_NAME "/multi_map_navigation/move"
 #define CANCEL_GOAL_TOPIC_NAME "/move_base/cancel"
 
-namespace sesto_rviz_plugins
+namespace rviz
 {
 
-  class SestoNav: public rviz::Panel
+  class Navigator: public rviz::Panel
   {
 
   typedef actionlib::SimpleActionClient<multi_map_navigation::MultiMapNavigationAction> Client;
 
   Q_OBJECT
   public:
-    SestoNav( QWidget* parent = 0 );
+    Navigator( QWidget* parent = 0 );
 
     virtual void load( const rviz::Config& config );
     virtual void save( rviz::Config config ) const;

@@ -12,14 +12,14 @@
 #include <QTreeWidget>
 #include <QPushButton>
 
-#include "sesto_navigation_panel.h"
+#include "navigation_panel.h"
 
 #define NELEMS(x)  (sizeof(x) / sizeof(x[0]))
 
-namespace sesto_rviz_plugins
+namespace rviz
 {
 
-  SestoNav::SestoNav( QWidget* parent )
+  Navigator::Navigator( QWidget* parent )
     : rviz::Panel( parent )
   {
   	setupNode();
@@ -38,7 +38,7 @@ namespace sesto_rviz_plugins
     initialize();
   }
 
-  void SestoNav::establishConnections()
+  void Navigator::establishConnections()
   {
     flagged_locations_tree->blockSignals(true);  // safety: make sure 'data change' signals don't interfere with automatically appended locations
 
@@ -49,20 +49,20 @@ namespace sesto_rviz_plugins
     connect(btn_cancel_, SIGNAL(clicked(void)), this, SLOT(cancelGoal()));
     connect(btn_set_map_, SIGNAL(clicked(void)), this, SLOT(setMap()));
 
-    multi_map_pose_est_sub = this->rosNode->subscribe<multi_map_navigation::MultiMapNavigationGoal>(MULTI_MAP_POS_EST_TOPIC, 2, &SestoNav::pose_cb, this);
-    current_map_name_sub = this->rosNode->subscribe<std_msgs::String>(MAP_NAME_TOPIC, 2, &SestoNav::map_name_cb, this);
+    multi_map_pose_est_sub = this->rosNode->subscribe<multi_map_navigation::MultiMapNavigationGoal>(MULTI_MAP_POS_EST_TOPIC, 2, &Navigator::pose_cb, this);
+    current_map_name_sub = this->rosNode->subscribe<std_msgs::String>(MAP_NAME_TOPIC, 2, &Navigator::map_name_cb, this);
 
     marker_arr_pub = this->rosNode->advertise<visualization_msgs::MarkerArray>(MARKER_PUB_TOPIC, 10);
     marker_label_arr_pub = this->rosNode->advertise<visualization_msgs::MarkerArray>(MARKER_LABEL_PUB_TOPIC, 10);
   }
 
-  void SestoNav::setupMapServices()
+  void Navigator::setupMapServices()
   {
     list_map_client = this->rosNode->serviceClient<map_store::ListMaps>("/" + currNamespace.data + "/multi_map_navigation/list_maps"); // Note: this list shouldn't change during the GUI runtime
     set_map_client = this->rosNode->serviceClient<multi_map_navigation::SetMap>("/" + currNamespace.data + "/multi_map_navigation/set_map");    
   }
 
-  void SestoNav::initialize()
+  void Navigator::initialize()
   {
     setNamespace();
     setupMapServices();
@@ -71,7 +71,7 @@ namespace sesto_rviz_plugins
     hasMapInitialized = false;
   }
 
-  void SestoNav::setupActionlibClient()
+  void Navigator::setupActionlibClient()
   {
     goalClient = new Client("/" + this->currNamespace.data + MOVE_GOAL_SERVER_NAME, true);
 
@@ -80,13 +80,13 @@ namespace sesto_rviz_plugins
     }
   }
 
-  void SestoNav::updateVizState()
+  void Navigator::updateVizState()
   {
     publish_markers();
     loadGoalComboBox();
   }
 
-  void SestoNav::setupDeleteBtn()
+  void Navigator::setupDeleteBtn()
   {
     add_delete_layout = new QHBoxLayout;
 
@@ -94,7 +94,7 @@ namespace sesto_rviz_plugins
     add_delete_layout->addWidget(btn_delete_);
   }
 
-  void SestoNav::loadMapComboBox()
+  void Navigator::loadMapComboBox()
   {
     QStringList maps;
     map_combo_box_->clear();
@@ -116,7 +116,7 @@ namespace sesto_rviz_plugins
 
   }
 
-  void SestoNav::setMap()
+  void Navigator::setMap()
   {
     multi_map_navigation::SetMap targetMap;
 
@@ -130,7 +130,7 @@ namespace sesto_rviz_plugins
 
   }
 
-  void SestoNav::pose_cb(const multi_map_navigation::MultiMapNavigationGoal::ConstPtr& msg)
+  void Navigator::pose_cb(const multi_map_navigation::MultiMapNavigationGoal::ConstPtr& msg)
   {
     flaggedLoc = *msg;
 
@@ -141,7 +141,7 @@ namespace sesto_rviz_plugins
     appendItem(flaggedLoc.target_pose.pose.position.x, flaggedLoc.target_pose.pose.position.y, yaw, flaggedLoc.goal_map);
   }
 
-  void SestoNav::map_name_cb(const std_msgs::String::ConstPtr& msg)
+  void Navigator::map_name_cb(const std_msgs::String::ConstPtr& msg)
   {
     if ((msg->data).compare(this->current_map_name) != 0) {
       this->current_map_name = msg->data;
@@ -155,7 +155,7 @@ namespace sesto_rviz_plugins
     }
   }
 
-  void SestoNav::initializeMap(std::string init_map_name)
+  void Navigator::initializeMap(std::string init_map_name)
   {
     multi_map_navigation::SetMap initMap;
 
@@ -170,7 +170,7 @@ namespace sesto_rviz_plugins
     hasMapInitialized = true;
   }
 
-  void SestoNav::appendItem(float pose_x, float pose_y, float pose_yaw, std::string map_name)
+  void Navigator::appendItem(float pose_x, float pose_y, float pose_yaw, std::string map_name)
   {
     flagged_locations_tree->blockSignals(true);  //mutex lock
 
@@ -195,7 +195,7 @@ namespace sesto_rviz_plugins
 
   }
 
-  void SestoNav::deleteFlaggedLoc()
+  void Navigator::deleteFlaggedLoc()
   {
     flagged_locations_tree->blockSignals(true); 
     delete_all_markers();
@@ -218,7 +218,7 @@ namespace sesto_rviz_plugins
     flagged_locations_tree->blockSignals(false);  
   }
 
-  void SestoNav::setGoal()
+  void Navigator::setGoal()
   {
     int indexOfSelectedGoal = goal_combo_box_->currentIndex();
     QTreeWidgetItem *goalLocation = flagged_locations_tree->topLevelItem(indexOfSelectedGoal);
@@ -251,14 +251,14 @@ namespace sesto_rviz_plugins
     // goalClient.waitForResult();
   }
 
-  void SestoNav::cancelGoal()
+  void Navigator::cancelGoal()
   {
     std_msgs::Bool cancel;
     cancel.data = true;
     cancel_goal_pub.publish(cancel);
   }
 
-  void SestoNav::delete_all_markers()
+  void Navigator::delete_all_markers()
   {
     int numFlaggedLocs = flagged_locations_tree->topLevelItemCount();
 
@@ -271,7 +271,7 @@ namespace sesto_rviz_plugins
     marker_label_arr_pub.publish(marker_label_arr);
   }
 
-  void SestoNav::publish_markers()
+  void Navigator::publish_markers()
   {
     int numFlaggedLocs = flagged_locations_tree->topLevelItemCount();
 
@@ -358,7 +358,7 @@ namespace sesto_rviz_plugins
 
   }
 
-  void SestoNav::createDataChild(QTreeWidgetItem *parent, std::string name, float value)
+  void Navigator::createDataChild(QTreeWidgetItem *parent, std::string name, float value)
   {
     QTreeWidgetItem *name_row = new QTreeWidgetItem(parent);
     name_row->setText(0, QString::fromStdString(name));
@@ -368,7 +368,7 @@ namespace sesto_rviz_plugins
     value_row->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsEditable);
   }
 
-  void SestoNav::createStringChild(QTreeWidgetItem *parent, std::string name, std::string value_string)
+  void Navigator::createStringChild(QTreeWidgetItem *parent, std::string name, std::string value_string)
   {
     QTreeWidgetItem *name_row = new QTreeWidgetItem(parent);
     name_row->setText(0, QString::fromStdString(name));
@@ -379,7 +379,7 @@ namespace sesto_rviz_plugins
   }
 
 
-  void SestoNav::setupGoalCombo()
+  void Navigator::setupGoalCombo()
   {
     goal_combo_layout = new QVBoxLayout;
     goal_combo_layout->addWidget(new QLabel("Set Goal:"));
@@ -390,7 +390,7 @@ namespace sesto_rviz_plugins
 
   }
 
-  void SestoNav::loadGoalComboBox()
+  void Navigator::loadGoalComboBox()
   {
     goal_combo_box_->clear();
 
@@ -406,7 +406,7 @@ namespace sesto_rviz_plugins
     goal_combo_box_->addItems(flaggedLocations);
   }
 
-  void SestoNav::setupMapCombo()
+  void Navigator::setupMapCombo()
   {
     map_combo_layout = new QVBoxLayout;
     map_title_ = new QLabel("Set Map:");
@@ -424,7 +424,7 @@ namespace sesto_rviz_plugins
     map_combo_layout->addLayout(button_combo_layout);
   }
 
-  void SestoNav::setupGotoCancel()
+  void Navigator::setupGotoCancel()
   {
     goto_cancel_layout = new QHBoxLayout;
 
@@ -436,7 +436,7 @@ namespace sesto_rviz_plugins
 
   }
 
-  void SestoNav::setupLocTree()
+  void Navigator::setupLocTree()
   {
     loc_tree_layout = new QVBoxLayout;
     loc_tree_layout->addWidget(new QLabel("Flagged Locations:"));    
@@ -450,14 +450,14 @@ namespace sesto_rviz_plugins
     loc_tree_layout->setAlignment(Qt::AlignTop);
   }
 
-  void SestoNav::setNamespace()
+  void Navigator::setNamespace()
   {
   	currNamespace.data = ns_combo_box_->currentText().toStdString();
   	mux_control_pub.publish(currNamespace);
 
     // Restart current map subscriber
     current_map_name_sub.shutdown();
-    current_map_name_sub = this->rosNode->subscribe<std_msgs::String>("/" + currNamespace.data + MAP_NAME_TOPIC, 2, &SestoNav::map_name_cb, this);
+    current_map_name_sub = this->rosNode->subscribe<std_msgs::String>("/" + currNamespace.data + MAP_NAME_TOPIC, 2, &Navigator::map_name_cb, this);
 
     cancel_goal_pub.shutdown();
     cancel_goal_pub = this->rosNode->advertise<std_msgs::Bool>("/" + currNamespace.data + "/cancel_all_goals", 2);
@@ -468,7 +468,7 @@ namespace sesto_rviz_plugins
     setupActionlibClient();
   }
 
-  void SestoNav::setupMainGuiPanel()
+  void Navigator::setupMainGuiPanel()
   {
   	QVBoxLayout* layout = new QVBoxLayout;
   	layout->addLayout(mux_controller_layout);
@@ -481,7 +481,7 @@ namespace sesto_rviz_plugins
   	setLayout(layout);
   }
 
-  void SestoNav::setupNode()
+  void Navigator::setupNode()
   {
   	rosNode = new ros::NodeHandle("");
   	mux_control_pub = rosNode->advertise<std_msgs::String>(MUX_CONTROL_TOPIC, 2);
@@ -490,12 +490,12 @@ namespace sesto_rviz_plugins
   	rosNode->getParam("/rviz_mux/rviz_namespace", rviz_namespace);
 
   	if (active_bots.empty()) {
-  		ROS_ERROR("SestoNav: No bots active. Make sure that all the bots have been initialized\n");
+  		ROS_ERROR("Navigator: No bots active. Make sure that all the bots have been initialized\n");
   		std::exit(EXIT_FAILURE);
   	}
   }
 
-  void SestoNav::setupMuxControl()
+  void Navigator::setupMuxControl()
   {
   	mux_controller_layout = new QHBoxLayout;
 
@@ -508,7 +508,7 @@ namespace sesto_rviz_plugins
   	}
   }
 
-  void SestoNav::addSubChildren(QTreeWidgetItem *item, rviz::Config flag) const
+  void Navigator::addSubChildren(QTreeWidgetItem *item, rviz::Config flag) const
   {
     // Add all the individual properties of an element
 
@@ -517,7 +517,7 @@ namespace sesto_rviz_plugins
     }
   }
 
-  void SestoNav::save( rviz::Config config ) const
+  void Navigator::save( rviz::Config config ) const
   {
     rviz::Panel::save( config );
 
@@ -537,7 +537,7 @@ namespace sesto_rviz_plugins
 
   }
 
-  void SestoNav::loadFlagProps(rviz::Config flag, QTreeWidgetItem *item)
+  void Navigator::loadFlagProps(rviz::Config flag, QTreeWidgetItem *item)
   {
     float pose_x;
     flag.mapGetFloat("Pose X", &pose_x);
@@ -557,7 +557,7 @@ namespace sesto_rviz_plugins
 
   }
 
-  void SestoNav::load( const rviz::Config& config )
+  void Navigator::load( const rviz::Config& config )
   {
     rviz::Panel::load( config );
 
@@ -585,4 +585,4 @@ namespace sesto_rviz_plugins
 } 
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(sesto_rviz_plugins::SestoNav,rviz::Panel )
+PLUGINLIB_EXPORT_CLASS(rviz::Navigator,rviz::Panel)

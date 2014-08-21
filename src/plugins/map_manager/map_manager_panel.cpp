@@ -18,7 +18,7 @@
 
 #define NELEMS(x)  (sizeof(x) / sizeof(x[0]))
 
-namespace sesto_rviz_plugins
+namespace rviz
 {
 
   MapManager::MapManager( QWidget* parent )
@@ -603,4 +603,4 @@ namespace sesto_rviz_plugins
 } 
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(sesto_rviz_plugins::MapManager,rviz::Panel )
+PLUGINLIB_EXPORT_CLASS(rviz::MapManager,rviz::Panel )

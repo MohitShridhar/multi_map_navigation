@@ -15,7 +15,7 @@ MultiMapPoseTool::MultiMapPoseTool()
   shortcut_key_ = 'f';
 
   nh_ = new ros::NodeHandle("");
-  this->current_robot_ns = "sesto"; // Initial control namespace
+  this->current_robot_ns = "robot"; // Initial control namespace
   this->current_map = "First_Floor"; // Initial map name 
   this->seqCount = 0;
 

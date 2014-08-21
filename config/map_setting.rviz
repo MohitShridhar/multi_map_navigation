@@ -36,7 +36,7 @@ Panels:
     Name: Time
     SyncMode: 0
     SyncSource: ""
-  - Class: sesto_rviz_plugins/MapManager
+  - Class: rviz/MapManager
     Name: MapManager
   - Class: rviz/Tool Properties
     Expanded:
