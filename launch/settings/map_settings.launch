@@ -5,7 +5,7 @@
   <!-- Map Aligner Setup: Only two maps are required -->
   <group ns="map_manager/alignment/primary">
     
-    <include file="$(find sesto_navigation)/launch/map_store.launch">
+    <include file="$(find multi_map_navigation)/launch/setup/map_store.launch">
       <arg name="frame_id_ref" value="map"/> 
     </include>
 
@@ -13,7 +13,7 @@
 
   <group ns="map_manager/alignment/secondary">
 
-    <include file="$(find sesto_navigation)/launch/map_store.launch">
+    <include file="$(find multi_map_navigation)/launch/setup/map_store.launch">
       <arg name="frame_id_ref" value="map"/> 
     </include>
 

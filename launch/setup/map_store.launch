@@ -1,0 +1,10 @@
+<launch>
+ 	
+  <arg name="frame_id_ref" default="/map"/>
+
+  <node pkg="map_store" type="map_manager" name="map_manager" output="screen">
+     <remap from="map" to="map_store_map"/>
+     <param name="map_frame_id" value="$(arg frame_id_ref)"/>
+  </node> 
+
+</launch>

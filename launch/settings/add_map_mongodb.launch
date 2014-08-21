@@ -13,8 +13,6 @@
 
   </node>
 
-<!-- FAKE -->
-
   <node pkg="map_store" type="map_saver" name="map_saver" />
   <node pkg="map_store" type="map_manager" name="map_manager" output="screen">
      <!-- unused topics -->
