@@ -64,7 +64,7 @@ class QLabel;
 class QDoubleSpinBox;
 class QFileDialog;
 
-#define NAMESPACE_TOPIC "/rviz_mux/control"
+#define NAMESPACE_TOPIC "/namespace_mux/control"
 
 namespace rviz
 {

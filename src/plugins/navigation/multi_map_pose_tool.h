@@ -30,7 +30,7 @@
 
 #endif
 
-#define MUX_CONTROL_TOPIC "/rviz_mux/control"
+#define MUX_CONTROL_TOPIC "/namespace_mux/control"
 #define MAP_NAME_TOPIC "/current_map_name"
 
 namespace rviz

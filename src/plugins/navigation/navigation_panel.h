@@ -47,7 +47,7 @@ class QPushButton;
 class QLabel;
 
 
-#define MUX_CONTROL_TOPIC "/rviz_mux/control"
+#define MUX_CONTROL_TOPIC "/namespace_mux/control"
 #define MULTI_MAP_POS_EST_TOPIC "/multi_map_pose"
 #define MARKER_PUB_TOPIC "/flagged_locations"
 #define MARKER_LABEL_PUB_TOPIC "/flagged_location_labels"
@@ -97,7 +97,7 @@ namespace rviz
 
   private:
     std::vector<std::string> active_bots; 
-    std::string rviz_namespace, current_map_name;
+    std::string outgoing_ns, current_map_name;
     std_msgs::String currNamespace;
     bool hasMapInitialized;
 

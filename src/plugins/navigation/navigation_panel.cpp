@@ -506,8 +506,8 @@ namespace rviz
   	rosNode = new ros::NodeHandle("");
   	mux_control_pub = rosNode->advertise<std_msgs::String>(MUX_CONTROL_TOPIC, 2);
 
-  	rosNode->getParam("/rviz_mux/active_bots", active_bots);
-  	rosNode->getParam("/rviz_mux/rviz_namespace", rviz_namespace);
+  	rosNode->getParam("/namespace_mux/active_bots", active_bots);
+  	rosNode->getParam("/namespace_mux/outgoing_ns", outgoing_ns);
 
   	if (active_bots.empty()) {
   		ROS_ERROR("Navigator: No bots active. Make sure that all the bots have been initialized\n");
