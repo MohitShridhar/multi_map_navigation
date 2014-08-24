@@ -13,7 +13,7 @@ This package is a catkinized version of an [old stack](http://wiki.ros.org/multi
 
 **Core**: [ROS Hydro](http://wiki.ros.org/hydro), [Catkin](http://wiki.ros.org/catkin): [actionlib](http://wiki.ros.org/actionlib), [warehouse_ros](http://wiki.ros.org/warehouse_ros), [rviz](http://wiki.ros.org/rviz), [map_server](http://wiki.ros.org/map_server) (see [package.xml](package.xml))
 
-**Additional**: (Custom Requirements): [map_store](https://github.com/MohitShridhar/mapstore)
+**Additional**: (Custom Requirements): [map_store](https://github.com/MohitShridhar/map_store)
 
 **Others**: [Qt4](http://qt-project.org/) (or higher)
 
