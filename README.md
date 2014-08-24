@@ -15,7 +15,7 @@ This package is a catkinized version of an [old stack](http://wiki.ros.org/multi
 
 **Additional**: (Custom Requirements): [map_store](https://github.com/MohitShridhar/map_store), [namespace_mux](https://github.com/MohitShridhar/namespace_mux)
 
-**Others**: [Qt4](http://qt-project.org/) (or higher)
+**Others**: [Qt4](http://qt-project.org/) (or higher), [MongoDB](http://docs.mongodb.org/manual/installation/) 2.6
 
 ## Installation
 Clone package & custom dependencies:
