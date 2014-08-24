@@ -85,4 +85,4 @@ Once you have setup the config file, you can create a 'multi_map_navigation' nod
 The `robot_namespace` parameter is redundant. See [issue #1](/../../issues/1)
 ### Guide:
 
-See the [wiki](https://github.com/MohitShridhar/multi_map_navigation/wiki/User-Guide) for more details on setup & usage.
+See the [wiki](https://github.com/MohitShridhar/multi_map_navigation/wiki/0.-User-Guide) for more details on setup & usage.
