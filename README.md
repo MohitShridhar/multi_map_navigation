@@ -13,16 +13,17 @@ This package is a catkinized version of an [old stack](http://wiki.ros.org/multi
 
 **Core**: [ROS Hydro](http://wiki.ros.org/hydro), [Catkin](http://wiki.ros.org/catkin): [actionlib](http://wiki.ros.org/actionlib), [warehouse_ros](http://wiki.ros.org/warehouse_ros), [rviz](http://wiki.ros.org/rviz), [map_server](http://wiki.ros.org/map_server) (see [package.xml](package.xml))
 
-**Additional**: (Custom Requirements): [map_store](https://github.com/MohitShridhar/map_store)
+**Additional**: (Custom Requirements): [map_store](https://github.com/MohitShridhar/map_store), [namespace_mux](https://github.com/MohitShridhar/namespace_mux)
 
 **Others**: [Qt4](http://qt-project.org/) (or higher)
 
 ## Installation
-Clone package & custom dependency:
+Clone package & custom dependencies:
 ```bash
 $ cd <catkin_ws>/src
 $ git clone https://github.com/MohitShridhar/multi_map_navigation.git
-$ git clone https://github.com/MohitShridhar/map_store
+$ git clone https://github.com/MohitShridhar/namespace_mux.git
+$ git clone https://github.com/MohitShridhar/map_store.git
 ```
 
 Resolve other dependencies (in Ubuntu):
@@ -34,7 +35,7 @@ $ rosdep install --from-paths src --ignore-src --rosdistro hydro -y
 Compile:
 ```bash
 $ cd <catkin_ws>
-$ catkin_make --pkg map_store multi_map_navigation
+$ catkin_make --pkg map_store namespace_mux multi_map_navigation
 ```
 
 Check that the messages & services were properly generated:
