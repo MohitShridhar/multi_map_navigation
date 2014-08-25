@@ -136,14 +136,14 @@
   <!-- Setup RVIZ Mux: -->
   <node name="namespace_mux" pkg="namespace_mux" type="namespace_mux" output="screen">
 
-    <rosparam param="/rviz_mux/robot_namespace_ref">"robot"</rosparam>
-    <rosparam param="/rviz_mux/rviz_namespace">"rviz"</rosparam>
+    <rosparam param="/namespace_mux/robot_namespace_ref">"robot"</rosparam>
+    <rosparam param="/namespace_mux/rviz_namespace">"rviz"</rosparam>
 
-    <rosparam param="/rviz_mux/active_bots">[
+    <rosparam param="/namespace_mux/active_bots">[
       "robot0", "robot1"
       ]</rosparam>
 
-    <rosparam param="/rviz_mux/subscribed_topics">[
+    <rosparam param="/namespace_mux/subscribed_topics">[
       "/map_store_map",
       "/odom", 
       "/laser/merged",
@@ -158,7 +158,7 @@
       "/particlecloud"
       ]</rosparam>
 
-    <rosparam param="/rviz_mux/published_topics">[
+    <rosparam param="/namespace_mux/published_topics">[
       "/cmd_vel",
       "/initialpose",
       "/move_base_simple/goal",
