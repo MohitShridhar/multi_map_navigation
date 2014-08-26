@@ -7,7 +7,9 @@ Multi-Map Navigation
     alt="IMAGE ALT TEXT HERE" width="718" height="403" border="10"/></a>
 </p>
 
-This package is a catkinized version of an [old stack](http://wiki.ros.org/multi_map_navigation) with additional functionality and GUI features. multi_map_navigation allows you to break up a large static-map into smaller, more managable chunks, and inter-connect them through a series of 'wormholes'. This allows you to isolate areas behind closed doors, or experiment with autonomous navigation across multiple floors with premeditated transitions.
+multi_map_navigation allows you to break up a large static-map into smaller, more managable chunks, and inter-connect them through a series of 'wormholes'. This allows you to isolate areas behind closed doors, or experiment with autonomous navigation across multiple floors with premeditated transitions.
+
+This package is a catkinized version of an [old stack](http://wiki.ros.org/multi_map_navigation) with additional functionality and GUI controls.
 
 ## Dependencies & Prerequisites
 
