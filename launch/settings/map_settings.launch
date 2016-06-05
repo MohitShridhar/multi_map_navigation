@@ -6,7 +6,7 @@
   <group ns="map_manager/alignment/primary">
     
     <include file="$(find multi_map_navigation)/launch/setup/map_store.launch">
-      <arg name="frame_id_ref" value="map"/> 
+      <arg name="frame_id_ref" value="/map"/> 
     </include>
 
   </group>
@@ -14,7 +14,7 @@
   <group ns="map_manager/alignment/secondary">
 
     <include file="$(find multi_map_navigation)/launch/setup/map_store.launch">
-      <arg name="frame_id_ref" value="map"/> 
+      <arg name="frame_id_ref" value="/map"/> 
     </include>
 
   </group>

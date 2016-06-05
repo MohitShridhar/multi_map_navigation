@@ -23,7 +23,7 @@
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
      <!-- Remaps to load the map file -->
      <remap from="static_map" to="dynamic_map" />
-     <remap from="map" to="map_store/map" />
+     <remap from="map" to="/map_store/map" />
      <param name="frame_id" value="$(arg map_frame_id)" />
   </node>
 
