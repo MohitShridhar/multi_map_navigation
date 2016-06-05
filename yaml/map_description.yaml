@@ -1,0 +1,19 @@
+start_map: BRS 069
+maps:
+     - name: BRS 069
+       north_angle: 1.5707963267948966
+     - name: BRS C025
+       north_angle: 1.5707963267948966
+     - name: Example
+       north_angle: 1.5707963267948966
+
+wormholes:
+     - name: test
+       type: normal
+       radius: 0.55
+       locations:
+            - map: BRS 069
+              position: [1.0, 1,0]
+            - map: BRS C025
+              position: [1.0, 1.0]
+

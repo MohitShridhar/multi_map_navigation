@@ -16,7 +16,7 @@
 
     <!-- Name - Must be consistent with spawn name [To edit]:  -->
     <!-- |||||||||||||||||||||||||||||||| -->
-    <arg name="modelName" value="cob3-1"/>
+    <arg name="modelName" value="robot0"/>
     <!-- |||||||||||||||||||||||||||||||| -->
 
 
@@ -56,7 +56,8 @@
 
 
     <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="multi_map_navigation" output="screen">
-      <param name="definition_file" value="$(find mdr_2dnav)/config/multi_level_db/cfg.yaml" />
+      <param name="definition_file" value="$(find multi_map_navigation)/yaml/map_description.yaml" />
+
       <param name="transition_types" value="elevator_blast" />
 
       <param name="robot_namespace" value="$(arg modelName)"/>
@@ -74,68 +75,7 @@
     </include>
 
   </group>
-
-
-
-  <group ns="robot1">
-
-    <!-- Name - Must be consistent with spawn name [To edit]:  -->
-    <!-- |||||||||||||||||||||||||||||||| -->
-    <arg name="modelName" value="robot1"/>
-    <!-- |||||||||||||||||||||||||||||||| -->
-
-
-    <!-- Launch elevator manager -->
-    <node pkg="multi_map_navigation" type="elevator_manager.py" name="elevator_blast" output="screen"/>
-
-    <param name="tf_prefix" value="$(arg modelName)" />
-
-    <!-- Launch map_store with MongoDB contents -->
-    <include file="$(find multi_map_navigation)/launch/setup/map_store.launch">
-      <arg name="frame_id_ref" value="$(arg modelName)/map"/>
-    </include>
-
-
-    <!-- Move base: -->
-
-    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-
-      <!-- <remap from="cmd_vel" to="/$(arg modelName)/cmd_vel"/> -->
-      <remap from="map" to="map_store_map"/>
-
-      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="global_costmap" />
-      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="local_costmap" />
-
-      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/local_costmap_params.yaml" command="load" />
-      
-      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/global_costmap_params.yaml" command="load" />
-      
-      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/move_base_params.yaml" command="load" /> 
-
-
-    <param name="controller_frequency" value="20.0" />
-
-    </node>
-
-
-    <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="multi_map_navigation" output="screen">
-      <param name="definition_file" value="$(find mdr_2dnav)/config/multi_level_db/cfg.yaml" />
-      <param name="transition_types" value="elevator_blast" />
-
-      <param name="robot_namespace" value="$(arg modelName)"/>
-      <param name="base_frame" value="base_link"/>
-
-    </node>
-
-    <!-- AMCL: -->
-    <include file="$(find mdr_2dnav)/ros/launch/amcl.launch">
-    </include>
-
-
-  </group>
-
-
-
+  
   <!-- Setup RVIZ Mux: -->
   <node name="namespace_mux" pkg="namespace_mux" type="namespace_mux" output="screen">
 
@@ -143,7 +83,7 @@
     <rosparam param="/namespace_mux/rviz_namespace">"rviz"</rosparam>
 
     <rosparam param="/namespace_mux/active_bots">[
-      "robot0", "robot1"
+      "robot0"
       ]</rosparam>
 
     <rosparam param="/namespace_mux/subscribed_topics">[
