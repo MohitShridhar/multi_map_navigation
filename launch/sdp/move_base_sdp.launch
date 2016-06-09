@@ -1,5 +1,8 @@
 <launch>
   <master auto="start"/>
+  <arg name="nav_mode" default="dwa" />
+  <arg name="robot" default="$(optenv ROBOT !!ROBOT NOT SET!!)" />
+  <arg name="robot_env" default="$(optenv ROBOT_ENV !!ROBOT_ENV NOT SET!!)" />
 
   <!-- Launch MongoDB map server. Note: All the maps must be preloaded into the Database -->
   <include file="$(find multi_map_navigation)/launch/setup/mongodb_server.launch">
@@ -29,18 +32,14 @@
     <arg name="frame_id_ref" value="base_link"/>
   </include>
 
-  <!--
-  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+  
 
-    <remap from="map" to="map_store_map"/>
-    <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="global_costmap" />
-    <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="local_costmap" />
-    <rosparam file="$(find mdr_2dnav)/ros/config/dwa/local_costmap_params.yaml" command="load" />
-    <rosparam file="$(find mdr_2dnav)/ros/config/dwa/global_costmap_params.yaml" command="load" />
-    <rosparam file="$(find mdr_2dnav)/ros/config/dwa/move_base_params.yaml" command="load" /> 
-    <param name="controller_frequency" value="20.0" />
-  </node>
-  -->
+  <include file="$(find mdr_2dnav)/ros/launch/2dnav_$(arg nav_mode).launch">
+    <arg name="robot" value="$(arg robot)" />
+    <arg name="robot_env" value="$(arg robot_env)" />
+  </include>
+
+
 
   <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="multi_map_navigation" output="screen">
     <param name="definition_file" value="$(find multi_map_navigation)/yaml/map_description.yaml" />
