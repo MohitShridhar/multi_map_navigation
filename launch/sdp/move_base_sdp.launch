@@ -29,11 +29,37 @@
     <arg name="frame_id_ref" value="base_link"/>
   </include>
 
-  <include file="$(find mdr_2dnav)/ros/launch/2dnav_$(arg nav_mode).launch">
-    <arg name="robot" value="$(arg robot)" />
-    <arg name="robot_env" value="$(arg robot_env)" />
-  </include>
-
+<node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
+        <!-- Remap from cmd_vel to care-o-bot 3 base controller topics -->
+        <remap from="cmd_vel" to="/base/twist_mux/command_navigation"/>
+        <remap from="odom" to="base_controller/odometry"/>
+        <remap from="~force_field_recovery/cmd_vel" to="/base/twist_mux/command_navigation"/>
+        
+        <!-- planner selection parameter -->
+        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+        
+        <!-- move_base parameters -->
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/move_base_params.yaml" command="load" />
+        <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" />
+        
+        <!-- local planner parameters (Dynamic Window Approach) -->
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/dwa_local_planner_params.yaml" command="load" ns="DWAPlannerROS" />
+        
+        <!-- global costmap parameters -->
+        <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="global_costmap"/>
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/global_costmap_params.yaml" command="load" />
+        
+        <!-- local costmap parameters -->
+        <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="local_costmap"/>
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/local_costmap_params.yaml" command="load" />    
+        
+        <!-- recovery behavior parameters-->    
+        <rosparam file="$(find mdr_2dnav)/ros/config/recovery_behaviors/force_field_parameters.yaml" command="load" ns="force_field_recovery"/>    
+        <rosparam file="$(find mdr_2dnav)/ros/config/recovery_behaviors/clear_costmap_parameters.yaml" command="load" ns="clear_costmap_recovery"/>    
+    </node>
+    
   <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="multi_map_navigation" output="screen">
     <param name="definition_file" value="$(find multi_map_navigation)/yaml/map_description.yaml" />
     <param name="transition_types" value="normal" />
