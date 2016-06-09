@@ -14,13 +14,10 @@
 
   <!-- Use the following group as a template for spawning multiple robots. Note: You should put your config files inside /config/robot# -->
 
-
   <!-- Name - Must be consistent with spawn name [To edit]:  -->
   <!-- |||||||||||||||||||||||||||||||| -->
     <arg name="modelName" value="robot0"/>
   <!-- |||||||||||||||||||||||||||||||| -->
-
-
 
   <!-- Launch elevator manager -->
   <node pkg="multi_map_navigation" type="elevator_manager.py" name="elevator_blast" output="screen"/>
@@ -32,24 +29,16 @@
     <arg name="frame_id_ref" value="base_link"/>
   </include>
 
-  
-
   <include file="$(find mdr_2dnav)/ros/launch/2dnav_$(arg nav_mode).launch">
     <arg name="robot" value="$(arg robot)" />
     <arg name="robot_env" value="$(arg robot_env)" />
   </include>
 
-
-
   <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="multi_map_navigation" output="screen">
     <param name="definition_file" value="$(find multi_map_navigation)/yaml/map_description.yaml" />
     <param name="transition_types" value="normal" />
     <param name="base_frame" value="base_link"/>
-  </node>
-   
-  <include file="$(find mdr_2dnav)/ros/launch/amcl.launch">
-  </include> 
-  
+  </node>  
   
   <!-- Setup RVIZ Mux: -->
   <node name="namespace_mux" pkg="namespace_mux" type="namespace_mux" output="screen">
