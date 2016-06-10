@@ -31,11 +31,11 @@
   <!-- Navigation -->
 
     <rosparam command="delete" param="/move_base"/>
-
+<!--
     <include file="$(find mdr_2dnav)/ros/launch/nav_common.launch">
         <arg name="robot_env" value="$(arg robot_env)" />
     </include>
-
+-->
 <!-- DWA Local Planner -->
 
     <node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
