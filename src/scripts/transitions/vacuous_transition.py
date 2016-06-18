@@ -10,6 +10,7 @@ server = None
 
 def vacuous(data):
     global server
+    ROS_INFO("Transition Server :)")
     server.set_succeeded(MultiMapNavigationTransitionResult())
 
 if (__name__ == '__main__'):

@@ -2,7 +2,6 @@
 
 <launch>
   <master auto="start"/>
-  <arg name="nav_mode" default="dwa" />
   <arg name="robot" default="$(optenv ROBOT !!ROBOT NOT SET!!)" />
   <arg name="robot_env" default="$(optenv ROBOT_ENV !!ROBOT_ENV NOT SET!!)" />
 
@@ -21,68 +20,64 @@
   <param name="tf_prefix" value="" />
 
   <!-- Launch map_store with MongoDB contents -->
-
   <include file="$(find multi_map_navigation)/launch/setup/map_store.launch">
-    <arg name="frame_id_ref" value="map"/>
   </include>
 
 
-  <!-- Navigation -->
-
-    <rosparam command="delete" param="/move_base"/>
-
-    <include file="$(find mcr_navigation_tools)/ros/launch/navigation_goals_as_marker.launch" />
-    
-    <!-- particle filter localization -->
-    <include file="$(find mdr_2dnav)/ros/launch/amcl.launch" />
-
+  <!-- NAVIGATION -->
+  <!-- visualize navigation goals -->
+  <include file="$(find mcr_navigation_tools)/ros/launch/navigation_goals_as_marker.launch" />
+  <!-- particle filter localization -->
+  <include file="$(find mdr_2dnav)/ros/launch/amcl.launch" />
 
 <!-- DWA Local Planner -->
+   <node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
+      <!-- Remap from cmd_vel to care-o-bot 3 base controller topics -->
+      <remap from="cmd_vel" to="/base/twist_mux/command_navigation"/>
+      <remap from="odom" to="base_controller/odometry"/>
+      <remap from="~force_field_recovery/cmd_vel" to="/base/twist_mux/command_navigation"/>
+      
+      <!-- planner selection parameter -->
+      <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+      
+      <!-- move_base parameters -->
+      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/move_base_params.yaml" command="load" />
+      <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" />
+      
+      <!-- local planner parameters (Dynamic Window Approach) -->
+      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/dwa_local_planner_params.yaml" command="load" ns="DWAPlannerROS" />
+      
+      <!-- global costmap parameters -->
+      <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="global_costmap"/>
+      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/global_costmap_params.yaml" command="load" />
+      
+      <!-- local costmap parameters -->
+      <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="local_costmap"/>
+      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="local_costmap" />
+      <rosparam file="$(find mdr_2dnav)/ros/config/dwa/local_costmap_params.yaml" command="load" />    
+      
+      <!-- recovery behavior parameters-->    
+      <rosparam file="$(find mdr_2dnav)/ros/config/recovery_behaviors/force_field_parameters.yaml" command="load" ns="force_field_recovery"/>    
+      <rosparam file="$(find mdr_2dnav)/ros/config/recovery_behaviors/clear_costmap_parameters.yaml" command="load" ns="clear_costmap_recovery"/>    
 
-    <node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
-        <remap from="robot0/map" to="map"/>
-        <remap from="map" to="map_store_map"/>
-
-        <!-- Remap from cmd_vel to care-o-bot 3 base controller topics -->
-        <remap from="cmd_vel" to="/base/twist_mux/command_navigation"/>
-        <remap from="odom" to="base_controller/odometry"/>
-        <remap from="~force_field_recovery/cmd_vel" to="/base/twist_mux/command_navigation"/>
-        
-        <!-- planner selection parameter -->
-        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
-        
-        <!-- move_base parameters -->
-        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/move_base_params.yaml" command="load" />
-        <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" />
-        
-        <!-- local planner parameters (Dynamic Window Approach) -->
-        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/dwa_local_planner_params.yaml" command="load" ns="DWAPlannerROS" />
-        
-        <!-- global costmap parameters -->
-        <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="global_costmap"/>
-        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="global_costmap"/>
-        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/global_costmap_params.yaml" command="load" />
-        
-        <!-- local costmap parameters -->
-        <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="local_costmap"/>
-        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="local_costmap" />
-        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/local_costmap_params.yaml" command="load" />    
-        
-        <!-- recovery behavior parameters-->    
-        <rosparam file="$(find mdr_2dnav)/ros/config/recovery_behaviors/force_field_parameters.yaml" command="load" ns="force_field_recovery"/>    
-        <rosparam file="$(find mdr_2dnav)/ros/config/recovery_behaviors/clear_costmap_parameters.yaml" command="load" ns="clear_costmap_recovery"/>    
     </node>
 
   <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="multi_map_navigation" output="screen">
-    <param name="definition_file" value="$(find multi_map_navigation)/yaml/map_description.yaml" />
-    <param name="transition_types" value="normal" />
-    <param name="base_frame" value="base_link"/>
-  </node>  
+      <param name="definition_file" value="$(find multi_map_navigation)/yaml/config.yaml" />
+      <param name="transition_types" value="normal" />
+      <param name="base_frame" value="base_link"/>
+
+    <rosparam>
+       robot_namespace: ""
+    </rosparam>
+
+    </node>  
   
     <!-- Setup RVIZ Mux: -->
   <node name="namespace_mux" pkg="namespace_mux" type="namespace_mux" output="screen">
 
-    <rosparam param="/namespace_mux/robot_namespace_ref">"robot"</rosparam>
+    <rosparam param="/namespace_mux/robot_namespace_ref">""</rosparam>
     <rosparam param="/namespace_mux/rviz_namespace">"rviz"</rosparam>
 
     <rosparam param="/namespace_mux/active_bots">[
@@ -114,12 +109,14 @@
   </node>
 
   <!-- Setup Fake Map-Frame ID -->
+
   <node name="fake_tf_broadcaster" pkg="namespace_mux" type="fake_tf_broadcaster" output="screen">
 
     <rosparam param="/fake_tf_broadcaster/pub_freq">50</rosparam>
-    <rosparam param="/fake_tf_broadcaster/input_curr_frame_ids">["robot0/map", "robot1/map"]</rosparam>
+    <rosparam param="/fake_tf_broadcaster/input_curr_frame_ids">["map"]</rosparam>
     <rosparam param="/fake_tf_broadcaster/output_fake_frame_ids">["rviz/map"]</rosparam>
     <rosparam param="/fake_tf_broadcaster/output_tf_offset">[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]</rosparam>    
 
   </node>
+
 </launch>
