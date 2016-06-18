@@ -1,4 +1,4 @@
-start_map: Example
+start_map: BRS 069
 maps:
      - name: BRS 069
        north_angle: 1.5707963267948966

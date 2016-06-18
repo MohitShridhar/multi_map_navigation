@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+
 <launch>
   <master auto="start"/>
   <arg name="nav_mode" default="dwa" />
@@ -9,13 +11,10 @@
     <arg name="host" value="localhost"/>
     <arg name="port" value="27017"/>
     <arg name="db_overwrite" value="true"/>
-    <arg name="db_location" value="warehouse_data"/>
+    <arg name="db_location" value="/home/jose/AtHome/data/db"/>
   </include>
 
   <!-- Name - Must be consistent with spawn name [To edit]:  -->
-  <!-- |||||||||||||||||||||||||||||||| -->
-  <!-- |||||||||||||||||||||||||||||||| -->
-
   <!-- Launch elevator manager -->
   <node pkg="multi_map_navigation" type="elevator_manager.py" name="elevator_blast" output="screen"/>
 
@@ -31,14 +30,19 @@
   <!-- Navigation -->
 
     <rosparam command="delete" param="/move_base"/>
-<!--
-    <include file="$(find mdr_2dnav)/ros/launch/nav_common.launch">
-        <arg name="robot_env" value="$(arg robot_env)" />
-    </include>
--->
+
+    <include file="$(find mcr_navigation_tools)/ros/launch/navigation_goals_as_marker.launch" />
+    
+    <!-- particle filter localization -->
+    <include file="$(find mdr_2dnav)/ros/launch/amcl.launch" />
+
+
 <!-- DWA Local Planner -->
 
     <node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
+        <remap from="robot0/map" to="map"/>
+        <remap from="map" to="map_store_map"/>
+
         <!-- Remap from cmd_vel to care-o-bot 3 base controller topics -->
         <remap from="cmd_vel" to="/base/twist_mux/command_navigation"/>
         <remap from="odom" to="base_controller/odometry"/>
@@ -75,18 +79,21 @@
     <param name="base_frame" value="base_link"/>
   </node>  
   
-  <!-- Setup RVIZ Mux: -->
+    <!-- Setup RVIZ Mux: -->
   <node name="namespace_mux" pkg="namespace_mux" type="namespace_mux" output="screen">
 
     <rosparam param="/namespace_mux/robot_namespace_ref">"robot"</rosparam>
     <rosparam param="/namespace_mux/rviz_namespace">"rviz"</rosparam>
+
+    <rosparam param="/namespace_mux/active_bots">[
+      ""
+      ]</rosparam>
 
     <rosparam param="/namespace_mux/subscribed_topics">[
       "/map_store_map",
       "/odom", 
       "/laser/merged",
       "/laser/scan_back",
-      "/base_footprint",
       "/laser/scan_front",
       "/move_base/local_costmap/obstacle_layer_footprint/footprint_stamped",
       "/move_base/TrajectoryPlannerROS/local_plan",
@@ -97,18 +104,22 @@
       "/particlecloud"
       ]</rosparam>
 
-
+    <rosparam param="/namespace_mux/published_topics">[
+      "/cmd_vel",
+      "/initialpose",
+      "/move_base_simple/goal",
+      "/clicked_point"
+      ]</rosparam>
 
   </node>
+
   <!-- Setup Fake Map-Frame ID -->
   <node name="fake_tf_broadcaster" pkg="namespace_mux" type="fake_tf_broadcaster" output="screen">
 
     <rosparam param="/fake_tf_broadcaster/pub_freq">50</rosparam>
-    <rosparam param="/fake_tf_broadcaster/input_curr_frame_ids">["/map"]</rosparam>
+    <rosparam param="/fake_tf_broadcaster/input_curr_frame_ids">["robot0/map", "robot1/map"]</rosparam>
     <rosparam param="/fake_tf_broadcaster/output_fake_frame_ids">["rviz/map"]</rosparam>
     <rosparam param="/fake_tf_broadcaster/output_tf_offset">[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]</rosparam>    
 
   </node>
-
-  -->
 </launch>
