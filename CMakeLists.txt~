@@ -18,6 +18,8 @@ find_package(catkin REQUIRED COMPONENTS
   map_server
 )
 
+add_definitions(-DHAVE_NEW_YAMLCPP)
+
 # NAVIGATION ----------------
 
 # generate action files
@@ -41,7 +43,6 @@ catkin_package(
   CATKIN_DEPENDS rospy actionlib map_store visualization_msgs move_base_msgs nav_msgs warehouse_ros std_msgs message_runtime nodelet rviz tf map_server
 )
 
-
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
@@ -49,8 +50,6 @@ include_directories(
 link_directories(
   ${catkin_LIBRARY_DIRS}
 )
-
-add_definitions(-DHAVE_NEW_YAMLCPP)
 
 ## This plugin includes Qt widgets, so we must include Qt like so:
 find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)

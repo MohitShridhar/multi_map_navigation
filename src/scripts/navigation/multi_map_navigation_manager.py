@@ -34,7 +34,7 @@ class MultiMapNavigationDataManager(object):
     def __init__(self):
         self.ready = False
         self.setup_namespaces()
-
+        print "namespace :", self.robot_namespace
         self.listener = tf.TransformListener(True, rospy.Duration(100))
         rospy.loginfo("Wait for list_maps")
         rospy.wait_for_service(self.robot_namespace + "/list_maps")
@@ -323,6 +323,7 @@ class MultiMapNavigationDataManager(object):
 
     def loadyaml(self, filename):
         try:
+            print "file:", filename
             f = open(filename, 'r') 
             text = f.read()
             data = yaml.load(text)
