@@ -11,7 +11,7 @@
     <arg name="host" value="localhost"/>
     <arg name="port" value="27017"/>
     <arg name="db_overwrite" value="true"/>
-    <arg name="db_location" value="/home/jose/AtHome/data/db"/>
+    <arg name="db_location" value="/home/jose/Dropbox/AtHome/data/db"/>
   </include>
 
   <!-- Name - Must be consistent with spawn name [To edit]:  -->
@@ -22,28 +22,29 @@
 
   <!-- Launch map_store with MongoDB contents -->
   <include file="$(find multi_map_navigation)/launch/setup/map_store.launch">
+    <arg name="frame_id_ref" value="map"/>
   </include>
 
 
   <!-- NAVIGATION -->
   <!-- visualize navigation goals -->
   <!-- DWA Local Planner -->
-  <include file="$(find mdr_2dnav)/ros/launch/2dnav_$(arg nav_mode).launch">
+  <include file="$(find mdr_2dnav)/ros/launch/2dnav.launch">
         <arg name="robot" value="$(arg robot)" />
         <arg name="robot_env" value="$(arg robot_env)" />
     </include>
 
   <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="multi_map_navigation" output="screen">
       <param name="definition_file" value="$(find multi_map_navigation)/yaml/config.yaml" />
-      <param name="transition_types" value="normal" />
+      <param name="transition_types" value="elevator_blast" />
       <param name="base_frame" value="base_link"/>
 
     <rosparam>
        robot_namespace: ""
     </rosparam>
 
-    </node>  
-  
+    </node>
+
     <!-- Setup RVIZ Mux: -->
   <node name="namespace_mux" pkg="namespace_mux" type="namespace_mux" output="screen">
 
@@ -56,7 +57,7 @@
 
     <rosparam param="/namespace_mux/subscribed_topics">[
       "/map_store_map",
-      "/odom", 
+      "/odom",
       "/laser/merged",
       "/laser/scan_back",
       "/laser/scan_front",
@@ -85,7 +86,7 @@
     <rosparam param="/fake_tf_broadcaster/pub_freq">50</rosparam>
     <rosparam param="/fake_tf_broadcaster/input_curr_frame_ids">["map"]</rosparam>
     <rosparam param="/fake_tf_broadcaster/output_fake_frame_ids">["rviz/map"]</rosparam>
-    <rosparam param="/fake_tf_broadcaster/output_tf_offset">[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]</rosparam>    
+    <rosparam param="/fake_tf_broadcaster/output_tf_offset">[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]</rosparam>
 
   </node>
 
