@@ -14,16 +14,26 @@ wormholes:
     radius: 0.5
     locations:
       - map: BRS_C069
-        position: [2.0, 0,4]
+        position: [1.0, 0.4]
+        waiting_point: [14.382 16.130 3.132] # x, y, yaw
+        floor: 0
+        height: 2.0
       - map: BRS C025
         position: [1.0, 1.0]
-
-  - name: 2Example  
+        waiting_point: [4.687 16.517 3.135]
+        floor: 1
+        height: 2.0
+  - name: 2Example
     type: elevator_blast
     radius: 0.5
     locations:
-      - map: BRS_C025
-        position: [1.0, 1,0]
+      - map: BRS_C069
+        position: [0.0, 0,0]
+        waiting_point: [14.382 16.130 3.132] # x, y, yaw
+        floor: 0
+        height: 2.0
       - map: Example
         position: [1.0, 1.0]
-
+        waiting_point: [14.382 16.130 3.132] # x, y, yaw
+        floor: 1
+        height: 2.0
