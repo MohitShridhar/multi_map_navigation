@@ -48,12 +48,12 @@ class MultiMapNavigationDataManager(object):
 
         self.map_name = std_msgs.msg.String()
         self.map_name.data = "F0" # default map name (shouldn't be used)
-        self.current_map_name_pub = rospy.Publisher("current_map_name", String, queue_size=10)
+        self.current_map_name_pub = rospy.Publisher("current_map_name", String, queue_size=1)
 
 
         self.list_maps_service = rospy.Service('~list_maps', ListMaps, self.list_maps)
-        self.wormhole_marker_pub = rospy.Publisher('wormhole_marker', Marker)
-        self.waiting_area_marker_pub = rospy.Publisher('waiting_area_marker', Marker)
+        self.wormhole_marker_pub = rospy.Publisher('wormhole_marker', Marker, queue_size=1)
+        self.waiting_area_marker_pub = rospy.Publisher('waiting_area_marker', Marker, queue_size=1  )
 
         transitions = ["door_blast", "elevator_blast", "door_drag"]
         if rospy.has_param('~transition_types'):
@@ -69,10 +69,10 @@ class MultiMapNavigationDataManager(object):
                 cli = actionlib.SimpleActionClient(client, MultiMapNavigationTargetElevatorAction)
             else:
                 cli = actionlib.SimpleActionClient(client, MultiMapNavigationTransitionAction)
-            
+
             cli.wait_for_server()
             self.transition_action_clients[client] = cli
-        
+
         self.n_markers = 0
 
         rospy.loginfo("loading map")
@@ -88,8 +88,8 @@ class MultiMapNavigationDataManager(object):
 
         if (not self.loadyaml(self.definition_file)):
             return
-        
-        self.map_publisher = rospy.Publisher("map", OccupancyGrid, latch=True)
+
+        self.map_publisher = rospy.Publisher("map", OccupancyGrid, latch=True,queue_size=10)
         self.select_map(self.start_map)
         self.dynamic_map_service = rospy.Service('dynamic_map', GetMap, self.dynamic_map)
         self.static_map_service = rospy.Service('static_map', GetMap, self.dynamic_map)
@@ -97,15 +97,15 @@ class MultiMapNavigationDataManager(object):
 
         rospy.loginfo("Waiting for position")
         self.get_robot_position()
-       
+
         self.ready = True
 
-        self.secondary_map_publisher = rospy.Publisher("secondary_map", OccupancyGrid, latch=True)
+        self.secondary_map_publisher = rospy.Publisher("secondary_map", OccupancyGrid, latch=True,queue_size=10)
         self.set_map_service = rospy.Service('~set_map', SetMap, self.set_map)
         self.set_secondary_map_service = rospy.Service('~set_secondary_map', SetMap, self.set_secondary_map)
-        
+
         rospy.Subscriber("/rviz/mux_control", String, self.namespace_cb)
-        
+
         rospy.loginfo("Starting")
 
     def setup_namespaces(self):
@@ -117,8 +117,8 @@ class MultiMapNavigationDataManager(object):
         if self.robot_namespace == "": # can be left empty to indicate no namespace (single robot)
             self.robot_namespace = ""
         else:
-            self.robot_namespace = "/" + self.robot_namespace 
-        
+            self.robot_namespace = "/" + self.robot_namespace
+
         rospy.loginfo("Initializing multi-map-navigation for " + self.robot_namespace)
 
         self.base_frame = "base_link"
@@ -188,7 +188,7 @@ class MultiMapNavigationDataManager(object):
                     angle = math.atan2(pos[msg.name][1], pos[msg.name][0])
                     distance = pos[msg.name][1] * pos[msg.name][1] + pos[msg.name][0] * pos[msg.name][0]
                     distance = math.sqrt(distance)
-                    
+
                     delta_x = pos[self.current_map][0] + distance * math.cos(angle + yaw)
                     delta_y = pos[self.current_map][1] + distance * math.sin(angle + yaw)
                     self.secondary_map_data.info.origin.position.x = delta_x
@@ -198,12 +198,13 @@ class MultiMapNavigationDataManager(object):
         else:
             rospy.logerr("Invalid secondary map name. Valid maps: " + str(self.map_db))
         return SetMapResponse()
-    
+
     def list_maps(self, msg):
         response = ListMapsResponse()
         for i in self.map_db:
             next = MapListEntry()
             next.name = i
+            print "map name " , i
             next.session_id = ""
             next.date = 0
             next.map_id = i
@@ -227,17 +228,17 @@ class MultiMapNavigationDataManager(object):
         response = GetMapResponse()
         response.map = self.secondary_map_data
         return response
-    
+
     def dynamic_map(self, msg):
         response = GetMapResponse()
         response.map = self.current_map_data
         return response
-        
+
     def publish_markers(self):
 
         n_markers = 0
         for i in self.wormholes:
-            
+
             loc = False
             wait_point = False
 
@@ -247,11 +248,11 @@ class MultiMapNavigationDataManager(object):
                 if (location["map"] == self.current_map):
                     loc = location["position"]
                     wait_point = location["waiting_point"]
-            
+
             if (loc):
                 wormhole_marker = Marker()
                 wormhole_marker.header.frame_id = self.robot_namespace + "/map"
-                wormhole_marker.header.stamp = rospy.get_rostime() 
+                wormhole_marker.header.stamp = rospy.get_rostime()
                 wormhole_marker.ns = "multimna"
                 wormhole_marker.type = Marker.CYLINDER
                 wormhole_marker.action = Marker.MODIFY
@@ -274,7 +275,7 @@ class MultiMapNavigationDataManager(object):
                 wormhole_marker.color.r = 0.0
                 wormhole_marker.color.g = 0.0
                 wormhole_marker.color.b = 1.0
-                
+
                 n_markers = n_markers + 1
                 self.wormhole_marker_pub.publish(wormhole_marker)
 
@@ -284,7 +285,7 @@ class MultiMapNavigationDataManager(object):
 
                 waiting_area_marker = Marker()
                 waiting_area_marker.header.frame_id = self.robot_namespace + "/map"
-                waiting_area_marker.header.stamp = rospy.get_rostime() 
+                waiting_area_marker.header.stamp = rospy.get_rostime()
                 waiting_area_marker.ns = "multimna"
                 waiting_area_marker.type = Marker.CYLINDER
                 waiting_area_marker.action = Marker.MODIFY
@@ -297,13 +298,13 @@ class MultiMapNavigationDataManager(object):
                 waiting_area_marker.pose.orientation.z = 0.0
                 waiting_area_marker.pose.orientation.w = 1.0
                 waiting_area_marker.scale.x = 0.15 * 2.0 # fixed radius size for wait_area goals
-                waiting_area_marker.scale.y = 0.15 * 2.0 
+                waiting_area_marker.scale.y = 0.15 * 2.0
                 waiting_area_marker.scale.z = 1
                 waiting_area_marker.color.a = 0.7
                 waiting_area_marker.color.r = 1.0
                 waiting_area_marker.color.g = 0.0
                 waiting_area_marker.color.b = 0.0
-                
+
                 self.waiting_area_marker_pub.publish(waiting_area_marker)
 
 
@@ -322,9 +323,10 @@ class MultiMapNavigationDataManager(object):
 
 
     def loadyaml(self, filename):
+        print "LOADING YAML"
         try:
             print "file:", filename
-            f = open(filename, 'r') 
+            f = open(filename, 'r')
             text = f.read()
             data = yaml.load(text)
         except:
@@ -339,10 +341,11 @@ class MultiMapNavigationDataManager(object):
         if (not "start_map" in data):
             rospy.logerr("YAML file: " + filename + " contains no start_map")
             return False
-        
+
         self.maps = {}
         self.map_north = {}
         for i in data["maps"]:
+            print "maps available", i
             if (not "name" in i):
                 rospy.logerr("YAML file: " + filename + " contains an invalid map with no name")
                 return False
@@ -354,11 +357,12 @@ class MultiMapNavigationDataManager(object):
                 return False
             self.map_north[i["name"]] = float(i["north_angle"])
             self.maps[i["name"]] = self.map_db[i["name"]]
-        
+
         self.wormholes = data["wormholes"]
         n = 0
         wh_names = []
         for i in self.wormholes:
+            print "wormholes available"
             if (not "name" in i):
                 rospy.logerr("YAML file: " + filename + " contains an invalid wormhole which is missing a name")
                 return False
@@ -402,17 +406,19 @@ class MultiMapNavigationDataManager(object):
         #Create a database of all maps
         map_list = self.list_maps_proxy()
         self.map_db = {}
+        print "Reading Maps from database"
         for i in map_list.map_list:
             if (i.name != ""):
+                print "map found", i.map_id
                 self.map_db[i.name] = i.map_id
-    
+
 
 
 
 class MultiMapNavigationNavigator():
     def __init__(self, manager):
         self.manager = manager
-        self.robot_namespace = manager.robot_namespace    
+        self.robot_namespace = manager.robot_namespace
 
         move_base_name = "move_base"
         if rospy.has_param('~move_base_action'):
@@ -421,7 +427,7 @@ class MultiMapNavigationNavigator():
         self.move_base.wait_for_server()
         self.action_server = actionlib.SimpleActionServer("multi_map_navigation/move", MultiMapNavigationAction,
                                                           execute_cb=self.execute_cb, auto_start=False)
-        self.pose_pub = rospy.Publisher(self.robot_namespace + "/initialpose", PoseWithCovarianceStamped)
+        self.pose_pub = rospy.Publisher(self.robot_namespace + "/initialpose", PoseWithCovarianceStamped, queue_size=1)
         while not self.manager.ready:
             rospy.sleep(1.0)
 
@@ -463,7 +469,7 @@ class MultiMapNavigationNavigator():
         robot_pos = self.manager.get_robot_position()
 
         print graph
-        
+
         #Create the graph for each of the wormholes
         for w in self.manager.wormholes:
             for l in range(0, len(w["locations"])):
@@ -482,7 +488,7 @@ class MultiMapNavigationNavigator():
                                 = calc_distance(ll["position"], jl["position"])
 
                 if (ll["map"] == goal.goal_map):
-                    dist = calc_distance([goal.target_pose.pose.position.x, 
+                    dist = calc_distance([goal.target_pose.pose.position.x,
                                           goal.target_pose.pose.position.y], ll["position"])
                     graph[str(l) + "_" + w["name"]]["end"] = dist
                     graph["end"][str(l) + "_" + w["name"]] = dist
@@ -496,7 +502,7 @@ class MultiMapNavigationNavigator():
                                   goal.target_pose.pose.position.y], robot_pos)
             graph["start"]["end"] = dist
             graph["end"]["start"] = dist
-        
+
         print graph
         path = self.shortest_path(graph, "start", "end")[1:] #skip "start"
         print path
@@ -509,7 +515,7 @@ class MultiMapNavigationNavigator():
 
         while (path[0] != "end"):
             print path[0]
-            
+
             #wormhole
             name = path[0][path[0].find("_") + 1:]
             #print name
@@ -531,16 +537,16 @@ class MultiMapNavigationNavigator():
                     wormhole_goal.wormhole = yaml.dump(wormhole)
                     wormhole_goal.start = int(path[0].split("_")[0])
                     wormhole_goal.end = int(path[1].split("_")[0])
-            
+
             angle = 0
             radius = None
-            if "radius" in wormhole: 
+            if "radius" in wormhole:
                 #This is in fact not required. Some wormholes have zero radius
                 #in which case the robot must drive as close as possible to the
                 #wormhole. Examples include doors and elevators.
                 radius = wormhole["radius"]
             if "angle" in location:
-                #This requires the robot to take a fixed angle position. This is 
+                #This requires the robot to take a fixed angle position. This is
                 #used for things like doors and elevators. It won't work if a
                 #radius is specified
                 angle = location["angle"]
@@ -553,7 +559,7 @@ class MultiMapNavigationNavigator():
                 msg = PoseWithCovarianceStamped()
                 msg.header.frame_id = self.robot_namespace + "/map"
                 msg.header.stamp = rospy.get_rostime()
-                
+
                 offset_angle = 0.0
                 offset_radius = 0.0
                 if (radius):
@@ -561,11 +567,11 @@ class MultiMapNavigationNavigator():
                     offset_radius = math.sqrt(offset[0] * offset[0] + offset[1] * offset[1])
 
                     offset_angle += north - old_north
-                
+
                 msg.pose.pose.position.x = pos[0] + math.cos(offset_angle) * offset_radius
                 msg.pose.pose.position.y = pos[1] + math.sin(offset_angle) * offset_radius
                 msg.pose.pose.position.z = 0.0
-                
+
                 roll, pitch, yaw = tf.transformations.euler_from_quaternion( \
                     self.manager.get_robot_rotation())
                 #print yaw
@@ -578,12 +584,12 @@ class MultiMapNavigationNavigator():
                 msg.pose.pose.orientation.z = quat[2]
                 msg.pose.pose.orientation.w = quat[3]
 
-                msg.pose.covariance = [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 
-                                       0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 
-                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
-                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
-                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
-                                       0.0, 0.0, 0.0, 0.0, 0.0, 
+                msg.pose.covariance = [0.25, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.25, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.0, 0.0, 0.0, 0.0,
                                        0.06853891945200942]
 
                 #print msg
@@ -637,7 +643,7 @@ class MultiMapNavigationNavigator():
                 msg.target_pose.pose.orientation.y = quat[1]
                 msg.target_pose.pose.orientation.z = quat[2]
                 msg.target_pose.pose.orientation.w = quat[3]
-                
+
                 wasGoalSuccessful = self.go_to_goal(msg, radius)
                 if not wasGoalSuccessful:
                     rospy.loginfo("Goal aborted!")
@@ -658,11 +664,11 @@ class MultiMapNavigationNavigator():
             elif (wormhole_type != "normal" and wormhole_goal != None):
                 rospy.loginfo("Transition: " + str(wormhole_type))
                 cli = self.manager.transition_action_clients[wormhole_type]
-                
+
                 #print wormhole_goal
                 cli.send_goal(wormhole_goal)
                 cli.wait_for_result()
-            
+
             #print "done"
             old_pos = pos
             old_angle = angle
@@ -670,7 +676,7 @@ class MultiMapNavigationNavigator():
 
             path = path[1:]
             print path
-        
+
 
         #Get to the end point
         msg = MoveBaseGoal()
@@ -719,7 +725,7 @@ class MultiMapNavigationNavigator():
         msg.target_pose.pose.orientation.y = quat[1]
         msg.target_pose.pose.orientation.z = quat[2]
         msg.target_pose.pose.orientation.w = quat[3]
-        
+
         wasWaitingGoalSuccessful = self.go_to_goal(msg, 0.15) # waiting_point radius is set as 0.15 m by default
         if not wasWaitingGoalSuccessful:
             return False # goal was aborted before reaching the waiting area
@@ -739,7 +745,7 @@ class MultiMapNavigationNavigator():
             while (self.move_base.get_state() == GoalStatus.PENDING or \
                         self.move_base.get_state() == GoalStatus.ACTIVE) and \
                         not rospy.is_shutdown():
-                
+
                 rospy.sleep(0.1)
 
                 if (self.preempt_goal == True):
@@ -753,7 +759,7 @@ class MultiMapNavigationNavigator():
                                      self.manager.get_robot_position()) < radius:
                         bad = False
                         self.move_base.cancel_goal()
-                        break   
+                        break
 
             self.move_base.wait_for_result()
             if (self.move_base.get_state() == GoalStatus.SUCCEEDED or bad == False):
@@ -801,7 +807,7 @@ class MultiMapNavigationNavigator():
         predecessors = {}
         queue = {}
         queue[start] = 0
-        
+
         while True:
             #find min
             vertex = None
@@ -824,7 +830,7 @@ class MultiMapNavigationNavigator():
                     predecessors[option] = vertex
             #Remove
             del queue[vertex]
-        
+
         path = []
         while True:
             path.append(end)
@@ -855,7 +861,3 @@ if (__name__ == "__main__"):
         manager.publish_markers()
         manager.publish_current_map_name()
         rospy.sleep(1.0)
-
-
-
-
