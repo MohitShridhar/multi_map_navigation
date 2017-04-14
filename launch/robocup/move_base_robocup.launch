@@ -11,7 +11,7 @@
     <arg name="host" value="localhost"/>
     <arg name="port" value="27017"/>
     <arg name="db_overwrite" value="true"/>
-    <arg name="db_location" value="/home/jose/Dropbox/AtHome/data/db"/>
+    <arg name="db_location" value="$(find multi_map_navigation)/data/db"/>
   </include>
 
   <!-- Name - Must be consistent with spawn name [To edit]:  -->
