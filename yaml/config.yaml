@@ -1,11 +1,11 @@
-start_map: BRS_C069
+start_map: kitchen
 
 maps:
-  - name: BRS_C069
+  - name: kitchen
     north_angle: 1.5707963267948966
-  - name: BRS_C025
+  - name: shelf
     north_angle: 1.5707963267948966
-  - name: Example
+  - name: dining-room
     north_angle: 1.5707963267948966
 
 wormholes:
@@ -13,12 +13,12 @@ wormholes:
     type: elevator_blast
     radius: 0.5
     locations:
-      - map: BRS_C069
+      - map: kitchen
         position: [1.0, 0.4]
-        waiting_point: [14.382 16.130 3.132] # x, y, yaw
+        waiting_point: [1.0 0.4 3.132] # x, y, yaw
         floor: 0
         height: 2.0
-      - map: BRS C025
+      - map: shelf
         position: [1.0, 1.0]
         waiting_point: [4.687 16.517 3.135]
         floor: 1
@@ -27,12 +27,12 @@ wormholes:
     type: elevator_blast
     radius: 0.5
     locations:
-      - map: BRS_C069
+      - map: shelf
         position: [0.0, 0,0]
         waiting_point: [14.382 16.130 3.132] # x, y, yaw
         floor: 0
         height: 2.0
-      - map: Example
+      - map: living-room
         position: [1.0, 1.0]
         waiting_point: [14.382 16.130 3.132] # x, y, yaw
         floor: 1
