@@ -15,9 +15,9 @@
   </include>
 
   <!-- Name - Must be consistent with spawn name [To edit]:  -->
-  <!-- Launch elevator manager -->
-  <node pkg="multi_map_navigation" type="elevator_manager.py" name="elevator_blast" output="screen"/>
+  <!-- Launch elevator manager just for elevators -->
 
+  <!--node pkg="multi_map_navigation" type="elevator_manager.py" name="elevator_blast" output="screen"/-->
   <param name="tf_prefix" value="" />
 
   <!-- Launch map_store with MongoDB contents -->
@@ -32,11 +32,11 @@
   <include file="$(find mdr_2dnav)/ros/launch/2dnav.launch">
         <arg name="robot" value="$(arg robot)" />
         <arg name="robot_env" value="$(arg robot_env)" />
-    </include>
+  </include>
 
   <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="multi_map_navigation" output="screen">
-      <param name="definition_file" value="$(find multi_map_navigation)/yaml/config.yaml" />
-      <param name="transition_types" value="elevator_blast" />
+      <param name="definition_file" value="$(find multi_map_navigation)/yaml/config2.yaml" />
+      <param name="transition_types" value="normal" />
       <param name="base_frame" value="base_link"/>
 
     <rosparam>

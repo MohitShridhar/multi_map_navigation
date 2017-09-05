@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib
   actionlib_msgs
   map_store
+  map_server
   visualization_msgs
   move_base_msgs
   nav_msgs
@@ -15,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   nodelet
   rviz
   tf
-  map_server
 )
 
 # NAVIGATION ----------------
@@ -30,7 +30,7 @@ add_service_files(DIRECTORY srv FILES SetMap.srv ReinitManager.srv)
 add_message_files(DIRECTORY msg FILES)
 
 # messages dependencies
-generate_messages(DEPENDENCIES std_msgs actionlib_msgs geometry_msgs) 
+generate_messages(DEPENDENCIES std_msgs actionlib_msgs geometry_msgs)
 
 
 
@@ -88,7 +88,7 @@ install(TARGETS
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(FILES 
+install(FILES
   plugin_description.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
@@ -98,6 +98,6 @@ install(DIRECTORY media/
 install(DIRECTORY icons/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/icons)
 
-install(DIRECTORY src/scripts/ 
+install(DIRECTORY src/scripts/
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

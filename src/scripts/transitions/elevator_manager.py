@@ -39,7 +39,7 @@ from std_msgs.msg import UInt32MultiArray
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import roslib.packages
-                
+
 class ElevatorControl:
     def __init__(self):
         self.ac_server = actionlib.SimpleActionServer("elevator_blast", MultiMapNavigationTargetElevatorAction, execute_cb=self.do_elevator, auto_start=False)
@@ -49,13 +49,13 @@ class ElevatorControl:
 
         self.elevatorId = "elevator1" # default elevator control
         self.sub_est_floor = rospy.Subscriber('/elevator_controller/' + self.elevatorId + '/estimated_current_floor', Int32, self.estimated_floor_cb)
-        
+
         self.pub_active_elevators = rospy.Publisher('/elevator_controller/active', UInt32MultiArray, queue_size=10)
         self.pub_target_floor = rospy.Publisher('/elevator_controller/target_floor', Int32, queue_size=10)
         self.pub_door_opener = rospy.Publisher('/elevator_controller/door', UInt8, queue_size=2)
 
         self.curr_elevator_ref = std_msgs.msg.UInt32MultiArray()
-        self.curr_elevator_ref.data = {1} 
+        self.curr_elevator_ref.data = {1}
         self.new_target = std_msgs.msg.Int32()
         self.open_doors_cmd = std_msgs.msg.UInt8()
         self.open_doors_cmd.data = 1
@@ -65,12 +65,13 @@ class ElevatorControl:
 
     def do_elevator(self, msg):
         self.new_target.data = msg.elevatorTargetFloor
-        
+
         if (self.elevatorId != msg.elevatorId):
             self.elevatorId = msg.elevatorId
             self.sub_est_floor.shutdown()
             self.sub_est_floor = rospy.Subscriber('/elevator_controller/' + self.elevatorId + '/estimated_current_floor', Int32, self.estimated_floor_cb)
 
+        print (self.elevatorId, "here")
         self.curr_elevator_ref.data = {int(self.elevatorId.replace("elevator", ""))}
 
         self.pub_active_elevators.publish(self.curr_elevator_ref)
@@ -93,4 +94,3 @@ if __name__ == '__main__':
 
     blast = ElevatorControl()
     rospy.spin()
-    
