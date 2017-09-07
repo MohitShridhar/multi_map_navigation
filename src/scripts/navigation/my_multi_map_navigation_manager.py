@@ -52,7 +52,6 @@ class MultiMapManager(object):
         #rospy.loginfo("Waiting for position")
 
         self.get_robot_position()
-        print "after position"
 
         self.ready = True
 
@@ -185,7 +184,6 @@ class MultiMapManager(object):
         n = 0
         wh_names = []
         for i in self.wormholes:
-            print "wormholes available"
             if (not "name" in i):
                 rospy.logerr("YAML file: " + filename + " contains an invalid wormhole which is missing a name")
                 return False
@@ -220,8 +218,8 @@ class MultiMapNavigationNavigator():
         self.move_base.wait_for_server()
         self.action_server = actionlib.SimpleActionServer("multi_map_navigation/move", MultiMapNavigationAction,
                                                           execute_cb=self.execute_cb, auto_start=False)
-        print "sevice initialize"
         self.pose_pub = rospy.Publisher("/initialpose", PoseWithCovarianceStamped, queue_size=1)
+        
         while not self.manager.ready:
             rospy.sleep(1.0)
 
@@ -238,9 +236,7 @@ class MultiMapNavigationNavigator():
         #print goal.goal_map
 
         #Create a graph of all the wormholes. The nodes are the locations.
-        print "execute_cb"
         graph = {'start': {}, 'end': {}}
-
 
         for w in self.manager.wormholes:
             #The cost of moving through a wormhole is nothing. In the future, this
@@ -261,8 +257,6 @@ class MultiMapNavigationNavigator():
                 graph[str(l) + "_" + w["name"]] = traverse
 
         robot_pos = self.manager.get_robot_position()
-
-        print graph
 
         #Create the graph for each of the wormholes
         for w in self.manager.wormholes:
@@ -297,7 +291,6 @@ class MultiMapNavigationNavigator():
             graph["start"]["end"] = dist
             graph["end"]["start"] = dist
 
-        print "GRAPH ", graph
         path = self.shortest_path(graph, "start", "end")[1:] #skip "start"
         print "PATH ", path
 
@@ -308,8 +301,6 @@ class MultiMapNavigationNavigator():
         old_angle = None
 
         while (path[0] != "end"):
-            print path[0]
-
             #wormhole
             name = path[0][path[0].find("_") + 1:]
             #print name
@@ -536,7 +527,6 @@ class MultiMapNavigationNavigator():
         return True;
 
     def go_to_goal(self, msg, radius=None):
-        print msg
         #print "Wait for move base"
         bad = True
         bad_count = 0
@@ -663,4 +653,4 @@ if (__name__ == "__main__"):
         manager.publish_markers()
         manager.publish_current_map_name()
         rospy.sleep(1.0)
-m
+
