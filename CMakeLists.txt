@@ -21,7 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 # NAVIGATION ----------------
 
 # generate action files
-add_action_files(DIRECTORY action FILES MultiMapNavigation.action MultiMapNavigationTransition.action MultiMapNavigationTargetElevator.action)
+add_action_files(DIRECTORY action FILES MultiMapNavigation.action MultiMapNavigationTransition.action MultiMapNavigationTargetElevator.action MultiMapServer.action)
 
 # generate service files
 add_service_files(DIRECTORY srv FILES SetMap.srv ReinitManager.srv)
