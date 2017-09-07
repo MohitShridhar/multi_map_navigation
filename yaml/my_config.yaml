@@ -15,14 +15,14 @@ wormholes:
       - map: shelf
         position: [3.0, 1.4]
       - map: dining-room
-        position: [1.0, 1.0]
+        position: [1.0, -1.0]
   - name: dining-room
     radius: 0.5
     locations:
       - map: kitchen
         position: [1.0, 0.0]
       - map: shelf
-        position: [0.0, 2.0]
+        position: [-2.0, 2.0]
   - name: shelf
     radius: 0.5
     locations:
