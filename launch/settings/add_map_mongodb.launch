@@ -5,7 +5,7 @@
 
   <!-- Remap port/host as required -->
   <param name="warehouse_host" value="localhost"/>
-  <param name="warehouse_port" value="27017"/>
+  <param name="warehouse_port" value="27020"/>
 
   <node name="mongo" type="mongo_wrapper_ros.py" pkg="warehouse_ros">
     <param name="overwrite" value="true"/>
