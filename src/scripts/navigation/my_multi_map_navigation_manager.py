@@ -34,7 +34,7 @@ class MultiMapManager(object):
         self.setup_namespaces()
         self.listener = tf.TransformListener()
         self.list_maps = ["kitchen", "living-room",'dining-room','shelf']
-        self.current_map_name_pub = rospy.Publisher("map_name", String, queue_size=1)
+        self.current_map_name_pub = rospy.Publisher("multi_map_server/map_name", String, queue_size=1)
         self.wormhole_marker_pub = rospy.Publisher('wormhole_marker', MarkerArray, queue_size=1)
         self.n_markers = 0
 
@@ -86,6 +86,7 @@ class MultiMapManager(object):
             try:
                 self.listener.waitForTransform("/map", self.base_frame, rospy.Time(), rospy.Duration(100))
                 (trans,rot) = self.listener.lookupTransform('/map',self.base_frame, rospy.Time())
+		print "worked"
                 return rot
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
                 rospy.logwarn("Failed to get robot transform")
@@ -149,9 +150,7 @@ class MultiMapManager(object):
         self.n_markers = n_markers
 
     def loadyaml(self, filename):
-        print "LOADING YAML"
         try:
-            print "file:", filename
             f = open(filename, 'r')
             text = f.read()
             data = yaml.load(text)
@@ -174,10 +173,10 @@ class MultiMapManager(object):
         self.maps = {}
         self.map_north = 1.5707963267948966
         for i in data["maps"]:
-            print "maps available", i
             if (not "name" in i):
                 rospy.logerr("YAML file: " + filename + " contains an invalid map with no name")
                 return False
+            print "maps available", i["name"]
             self.maps[i["name"]] =  [i["name"]]
 
         self.wormholes = data["wormholes"]
@@ -292,7 +291,7 @@ class MultiMapNavigationNavigator():
             graph["end"]["start"] = dist
 
         path = self.shortest_path(graph, "start", "end")[1:] #skip "start"
-        print "PATH ", path
+        print "PATH FOUND", path
 
         offset = []
         old_north = 0.0
@@ -381,6 +380,9 @@ class MultiMapNavigationNavigator():
                 # self.pose_pub.publish(msg)
                 #Select the new map
                 #self.manager.select_map(mapname)
+                self.manager.current_map = mapname
+		
+	        #self.manager.current_map_name_pub.publish(mapname)
 
                 # emptySrv = std_srvs.srv.Empty()
                 # rospy.wait_for_service(self.robot_namespace + "/global_localization")

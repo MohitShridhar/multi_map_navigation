@@ -34,7 +34,6 @@ class MultiMapNavigationDataManager(object):
     def __init__(self):
         self.ready = False
         self.setup_namespaces()
-        print "namespace :", self.robot_namespace
         self.listener = tf.TransformListener(True, rospy.Duration(100))
         rospy.loginfo("Wait for list_maps")
         rospy.wait_for_service(self.robot_namespace + "/list_maps")
@@ -144,8 +143,8 @@ class MultiMapNavigationDataManager(object):
 
     def get_robot_rotation(self):
         while not rospy.is_shutdown():
-            return None
             try:
+		print self.robot_namespace + "/map", self.robot_namespace + self.base_frame
                 self.listener.waitForTransform(self.robot_namespace + "/map", self.robot_namespace + self.base_frame, rospy.Time(), rospy.Duration(100))
                 (trans,rot) = self.listener.lookupTransform(self.robot_namespace + '/map', self.robot_namespace + self.base_frame, rospy.Time())
                 return rot
@@ -204,7 +203,6 @@ class MultiMapNavigationDataManager(object):
         for i in self.map_db:
             next = MapListEntry()
             next.name = i
-            print "map name " , i
             next.session_id = ""
             next.date = 0
             next.map_id = i
@@ -245,10 +243,9 @@ class MultiMapNavigationDataManager(object):
             # TODO: visualize waiting point
 
             for location in i["locations"]:
-                print "location " , location
                 if (location["map"] == self.current_map):
                     loc = location["position"]
-                    #wait_point = location["waiting_point"]
+                    wait_point = location["waiting_point"]
 
             if (loc):
                 print "locations" , loc
@@ -320,12 +317,12 @@ class MultiMapNavigationDataManager(object):
                 waiting_area_marker = Marker.DELETE
                 waiting_area_marker.id = self.n_markers
 
+		rospy.loginfo("publishing wormholes")
                 self.wormhole_marker_pub.publish(wormhole_marker)
         self.n_markers = n_markers
 
 
     def loadyaml(self, filename):
-        print "LOADING YAML"
         try:
             print "file:", filename
             f = open(filename, 'r')
@@ -347,7 +344,6 @@ class MultiMapNavigationDataManager(object):
         self.maps = {}
         self.map_north = {}
         for i in data["maps"]:
-            print "maps available", i
             if (not "name" in i):
                 rospy.logerr("YAML file: " + filename + " contains an invalid map with no name")
                 return False
@@ -364,7 +360,6 @@ class MultiMapNavigationDataManager(object):
         n = 0
         wh_names = []
         for i in self.wormholes:
-            print "wormholes available"
             if (not "name" in i):
                 rospy.logerr("YAML file: " + filename + " contains an invalid wormhole which is missing a name")
                 return False
@@ -408,10 +403,8 @@ class MultiMapNavigationDataManager(object):
         #Create a database of all maps
         map_list = self.list_maps_proxy()
         self.map_db = {}
-        print "Reading Maps from database"
         for i in map_list.map_list:
             if (i.name != ""):
-                print "map found", i.map_id
                 self.map_db[i.name] = i.map_id
 
 
@@ -469,8 +462,6 @@ class MultiMapNavigationNavigator():
                 graph[str(l) + "_" + w["name"]] = traverse
 
         robot_pos = self.manager.get_robot_position()
-
-        print graph
 
         #Create the graph for each of the wormholes
         for w in self.manager.wormholes:
@@ -574,6 +565,7 @@ class MultiMapNavigationNavigator():
                 msg.pose.pose.position.y = pos[1] + math.sin(offset_angle) * offset_radius
                 msg.pose.pose.position.z = 0.0
 
+		print self.manager.get_robot_rotation()
                 roll, pitch, yaw = tf.transformations.euler_from_quaternion( \
                     self.manager.get_robot_rotation())
                 #print yaw
@@ -610,7 +602,7 @@ class MultiMapNavigationNavigator():
 
                 # self.pose_pub.publish(msg)
 
-                rospy.sleep(2) #FIXME: come up with an alternative approach to know when AMCL is done
+                #rospy.sleep(2) #FIXME: come up with an alternative approach to know when AMCL is done
 
                 offset = self.manager.get_robot_position()
                 offset[0] = offset[0] - pos[0]
@@ -856,11 +848,9 @@ if (__name__ == "__main__"):
     rospy.init_node('multi_map_navigation')
     manager = MultiMapNavigationDataManager()
     navigator = MultiMapNavigationNavigator(manager)
-    print "After navigation"
     reinit_service = rospy.Service('map_manager/reinit', ReinitManager, handle_reinit_call)
 
     while not rospy.is_shutdown():
-        print "Ready to markers"
         manager.publish_markers()
         manager.publish_current_map_name()
         rospy.sleep(1.0)
