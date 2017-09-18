@@ -51,8 +51,7 @@ class MultiMapManager(object):
             return
         #rospy.loginfo("Waiting for position")
 
-        self.get_robot_position()
-
+        #self.get_robot_position()
         self.ready = True
 
         rospy.loginfo("Starting")
@@ -218,7 +217,7 @@ class MultiMapNavigationNavigator():
         self.action_server = actionlib.SimpleActionServer("multi_map_navigation/move", MultiMapNavigationAction,
                                                           execute_cb=self.execute_cb, auto_start=False)
         self.pose_pub = rospy.Publisher("/initialpose", PoseWithCovarianceStamped, queue_size=1)
-        
+
         while not self.manager.ready:
             rospy.sleep(1.0)
 
@@ -337,8 +336,10 @@ class MultiMapNavigationNavigator():
                 if (radius != None):
                     rospy.logwarn("Angle ignored because radius specified")
 
+	  
             #We have switched maps in the wormhole
             if (mapname != self.manager.current_map):
+                self.manager.current_map = mapname
                 #Create and publish the new pose for AMCL
                 msg = PoseWithCovarianceStamped()
                 msg.header.frame_id = "/map"
@@ -376,27 +377,28 @@ class MultiMapNavigationNavigator():
                                        0.0, 0.0, 0.0, 0.0, 0.0,
                                        0.06853891945200942]
 
-                #print msg
-                # self.pose_pub.publish(msg)
+		#print msg
+                #self.pose_pub.publish(msg)
                 #Select the new map
                 #self.manager.select_map(mapname)
-                self.manager.current_map = mapname
-		
 	        #self.manager.current_map_name_pub.publish(mapname)
+                emptySrv = Empty()
+                #rospy.wait_for_service("/global_localization")
 
-                # emptySrv = std_srvs.srv.Empty()
-                # rospy.wait_for_service(self.robot_namespace + "/global_localization")
+                try:
+                    init_amcl = rospy.ServiceProxy("/global_localization", Empty)
+                    init_amcl()
+                    pass
+                except:
+                    rospy.logerr("Could not re-initialize AMCL")
 
-                # try:
-                #     init_amcl = rospy.ServiceProxy(self.robot_namespace + "/global_localization", Empty)
-                #     init_amcl()
-                # except:
-                #     rospy.logerr("Could not re-initialize AMCL")
-
-                # self.pose_pub.publish(msg)
+                rospy.loginfo("%s pretend to publsh ", msg.pose.pose)
+                self.pose_pub.publish(msg)
 
                 rospy.sleep(2) #FIXME: come up with an alternative approach to know when AMCL is done
 
+
+                #NOT SO SURE HOW IT WORKS
                 offset = self.manager.get_robot_position()
                 offset[0] = offset[0] - pos[0]
                 offset[1] = offset[1] - pos[1]
@@ -410,7 +412,7 @@ class MultiMapNavigationNavigator():
                 #print pos
                 #Create the goal for the next waypoint (at the target)
                 rospy.loginfo("Heading towards a wormhole")
-		"""
+
                 if (wormhole["type"] == "elevator_blast"):
                     wasGoalSuccessful = self.go_to_waiting_point(location["waiting_point"])
                     if not wasGoalSuccessful:
@@ -418,7 +420,7 @@ class MultiMapNavigationNavigator():
                         return None;
 
                     self.target_elevator(location["floor"], wormhole["name"]) # call elevator to current floor
-		"""
+
                 msg = MoveBaseGoal()
                 msg.target_pose.header.stamp = rospy.get_rostime()
                 msg.target_pose.header.frame_id = self.robot_namespace + "/map"
@@ -443,12 +445,12 @@ class MultiMapNavigationNavigator():
             else:
                 rospy.loginfo("Skipped move base because the goal location is the current location")
 
-	    """
+
             if (wormhole_type == "elevator_blast" and wormhole_goal != None):
                 rospy.loginfo("Transition: Elevator Blast")
                 next_floor = self.find_target_floor(wormhole, goal.goal_map)
                 self.target_elevator(next_floor, wormhole["name"])
-	
+
             elif (wormhole_type != "normal" and wormhole_goal != None):
                 rospy.loginfo("Transition: " + str(wormhole_type))
                 cli = self.manager.transition_action_clients[wormhole_type]
@@ -456,14 +458,14 @@ class MultiMapNavigationNavigator():
                 #print wormhole_goal
                 cli.send_goal(wormhole_goal)
                 cli.wait_for_result()
-	    """
+
             rospy.loginfo("Transition: " + str(wormhole_type))
             #cli = self.manager.transition_action_clients[wormhole_type]
 
             #print wormhole_goal
             #cli.send_goal(wormhole_goal)
             #cli.wait_for_result()
-            
+
             print "DONE AFTER TRANSACTION"
             old_pos = pos
             old_angle = angle
@@ -650,9 +652,8 @@ if (__name__ == "__main__"):
     navigator = MultiMapNavigationNavigator(manager)
 
     reinit_service = rospy.Service('map_manager/reinit', ReinitManager, handle_reinit_call)
-    print "after re_init"
+
     while not rospy.is_shutdown():
         manager.publish_markers()
         manager.publish_current_map_name()
         rospy.sleep(1.0)
-
