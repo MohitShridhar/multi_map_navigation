@@ -11,8 +11,8 @@
   <!--node name="multi_map_server" pkg="multi_map_server" type="multi_map_server" args="$(arg initial_map)"/-->
 
 
-  <node pkg="tf" type="static_transform_publisher" name="odom_to_map"
-    args="0.1 0  0  0 0 0  /map /odom_combined 100" />
+  <!--node pkg="tf" type="static_transform_publisher" name="odom_to_map"
+    args="0.1 0  0  0 0 0  /map /odom_combined 100" /-->
   <!-- Name - Must be consistent with spawn name [To edit]:  -->
   <!-- Launch elevator manager -->
   <node pkg="multi_map_navigation" type="elevator_manager.py" name="elevator_blast" output="screen"/>
