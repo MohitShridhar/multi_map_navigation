@@ -7,7 +7,7 @@
   <arg name="robot_env" default="$(optenv ROBOT_ENV !!ROBOT_ENV NOT SET!!)" />
 
   <!-- Map_server-->
-  <arg name="initial_map" default="living-room-c069" />
+  <arg name="initial_map" default="livingC069" />
   <node name="multi_map_server" pkg="multi_map_server" type="multi_map_server" args="$(arg initial_map)"/>
 
 
@@ -15,7 +15,7 @@
     args="0.1 0  0  0 0 0  /map /odom_combined 100" /-->
   <!-- Name - Must be consistent with spawn name [To edit]:  -->
   <!-- Launch elevator manager -->
-  <node pkg="multi_map_navigation" type="elevator_manager.py" name="elevator_blast" output="screen"/>
+  <!--node pkg="multi_map_navigation" type="elevator_manager.py" name="elevator_blast" output="screen"/-->
   <node pkg="multi_map_navigation" type="multimap_transition.py" name="multimap_server" output="screen"/>
 
   <!-- NAVIGATION -->
