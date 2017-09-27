@@ -61,8 +61,8 @@ class MultiMapNavigationNavigator():
         graph.node[self.manager.current_map]['y'] = robot_pos[1]
 
         #Node of end goal must match with goal pose
-        graph.node[goal.goal_map]['x'] = goal.target_pose.pose.position.x[0]
-        graph.node[goal.goal_map]['y'] = goal.target_pose.pose.position.y[1]
+        graph.node[goal.goal_map]['x'] = goal.target_pose.pose.position.x
+        graph.node[goal.goal_map]['y'] = goal.target_pose.pose.position.y
 
 
         #The cost of moving through a wormhole is nothing. In the future, this
@@ -78,7 +78,7 @@ class MultiMapNavigationNavigator():
         print graph.nodes()
 
         path = nx.astar_path(graph, self.manager.current_map, goal.goal_map)
-        print "PATH FOUND", path
+        print "PATH FOUND", path , " from " , self.manager.current_map , " to " , goal.goal_map
 
         offset = []
         old_north = 0.0
@@ -86,7 +86,7 @@ class MultiMapNavigationNavigator():
         old_pos = [None, None]
         old_angle = None
 
-        while (path[0] != "end"):
+        while (path[0] != self.manager.current_map):
             #wormhole
             name = path[0][path[0].find("_") + 1:]
             print name
@@ -95,7 +95,8 @@ class MultiMapNavigationNavigator():
                 if (i["name"] == name):
                     wormhole = i
             #print wormhole
-            location = wormhole["locations"][int(path[0].split("_")[0])]
+            print wormhole["locations"]
+            location = wormhole["locations"][name]
             pos = location["position"]
             mapname = location["map"]
             north = self.manager.map_north
@@ -183,7 +184,7 @@ class MultiMapNavigationNavigator():
                 rospy.loginfo("%s pretend to publsh ", msg.pose.pose)
                 self.pose_pub.publish(msg)
 
-                rospy.sleep(2) #FIXME: come up with an alternative approach to know when AMCL is done
+                #rospy.sleep(2) #FIXME: come up with an alternative approach to know when AMCL is done
 
 
                 #NOT SO SURE HOW IT WORKS
