@@ -1,6 +1,8 @@
 import rospy
 import math
 import random
+import tf
+import networkx as nx
 import actionlib
 import actionlib_msgs
 from std_msgs.msg import Bool
@@ -45,64 +47,30 @@ class MultiMapNavigationNavigator():
     def execute_cb(self, goal):
         #print self.manager.current_map
         #print goal.goal_map
+        graph = nx.Graph()
 
-        #Create a graph of all the wormholes. The nodes are the locations.
-        graph = {'start': {}, 'end': {}}
+        for n in self.manager.maps:
+            graph.add_node(n)
 
-        for w in self.manager.wormholes:
-            #The cost of moving through a wormhole is nothing. In the future, this
-            #could be non-zero if there is an object such as a door or elevator that
-            #could slow the robot's motion.
-            for l in range(0, len(w["locations"])):
-                direction = "double"
-                if ("direction" in w["locations"][l]):
-                    direction = w["locations"][l]["direction"]
-                traverse = {}
-                if (direction == "double" or direction == "entrance"):
-                    for j in range(0, len(w["locations"])):
-                        direction = "double"
-                        if ("direction" in w["locations"][j]):
-                            direction = w["locations"][j]["direction"]
-                        if (direction == "exit" or direction == "double"):
-                            traverse[str(j) + "_" + w["name"]] = 100.0
-                graph[str(l) + "_" + w["name"]] = traverse
-
+        nx.set_node_attributes(graph,"x", 0)
+        nx.set_node_attributes(graph,"y", 0)
         robot_pos = self.manager.get_robot_position()
+        graph.node[self.manager.current_map]['x'] = robot_pos[0]
+        graph.node[self.manager.current_map]['y'] = robot_pos[1]
+
+        #The cost of moving through a wormhole is nothing. In the future, this
+        #could be non-zero if there is an object such as a door or elevator that
+        #could slow the robot's motion.
 
         #Create the graph for each of the wormholes
         for w in self.manager.wormholes:
-            for l in range(0, len(w["locations"])):
-                #loop through the locations of the wormhole and add links
-                #to the start and end as well as other locations
-                ll = w["locations"][l]
-                for m in self.manager.wormholes:
-                    for j in range(0, len(m["locations"])):
-                        jl = m["locations"][j]
-                        if (ll["map"] == jl["map"]):
-                            #We only need to do this one-way because the other side
-                            #is done automatically in other iterations of the loop.
-                            #For now we use eucleadian distance. This works but it
-                            #would be better if we used actual planner results.
-                            graph[str(l) + "_" + w["name"]][str(j) + "_" + m["name"]] \
-                                = calc_distance(ll["position"], jl["position"])
+            for l in w["locations"]:
+                node_pose = [graph.node[w["name"]]['x'],  graph.node[w["name"]]['y']]
+                graph.add_edge(w["name"],l["map"], weight = calc_distance(node_pose, l["position"]))
 
-                if (ll["map"] == goal.goal_map):
-                    dist = calc_distance([goal.target_pose.pose.position.x,
-                                          goal.target_pose.pose.position.y], ll["position"])
-                    graph[str(l) + "_" + w["name"]]["end"] = dist
-                    graph["end"][str(l) + "_" + w["name"]] = dist
-                if (ll["map"] == self.manager.current_map):
-                    dist = calc_distance(robot_pos, ll["position"])
-                    graph[str(l) + "_" + w["name"]]["start"] = dist
-                    graph["start"][str(l) + "_" + w["name"]] = dist
+        print graph.nodes()
 
-        if (goal.goal_map == self.manager.current_map):
-            dist = calc_distance([goal.target_pose.pose.position.x,
-                                  goal.target_pose.pose.position.y], robot_pos)
-            graph["start"]["end"] = dist
-            graph["end"]["start"] = dist
-        print "GRAPH", graph
-        path = self.shortest_path(graph, "start", "end")[1:] #skip "start"
+        path = nx.astar_path(graph, self.manager.current_map, goal.goal_map)
         print "PATH FOUND", path
 
         offset = []
