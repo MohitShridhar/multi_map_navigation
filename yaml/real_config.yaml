@@ -12,12 +12,14 @@ wormholes:
     radius: 0.5
     locations:
       - map: dining-room
-        position: [1.470428 0.301883]
+        position: [1.470428, 0.301883]
       - map: kitchen
-        position: [3.440246 0.963580]
+        position: [3.440246, 0.963580]
   - name: dining-room
     type: normal
     radius: 0.5
     locations:
       - map: living-room
-        position: [1.480776 0.334119]
+        position: [1.470428, 0.301883]
+      - map: kitchen
+        position: [3.440246, 0.963580]
