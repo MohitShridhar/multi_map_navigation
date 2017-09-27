@@ -6,7 +6,7 @@
   <arg name="robot_env" default="$(optenv ROBOT_ENV !!ROBOT_ENV NOT SET!!)" />
 
   <!-- Map_server-->
-  <arg name="initial_map" default="living" />
+  <arg name="initial_map" default="living-room" />
   <node name="multi_map_server" pkg="multi_map_server" type="multi_map_server" args="$(arg initial_map)"/>
 
 
