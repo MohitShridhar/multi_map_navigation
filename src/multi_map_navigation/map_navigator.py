@@ -55,8 +55,15 @@ class MultiMapNavigationNavigator():
         nx.set_node_attributes(graph,"x", 0)
         nx.set_node_attributes(graph,"y", 0)
         robot_pos = self.manager.get_robot_position()
+
+        #Node of current_map must match with current pose
         graph.node[self.manager.current_map]['x'] = robot_pos[0]
         graph.node[self.manager.current_map]['y'] = robot_pos[1]
+
+        #Node of end goal must match with goal pose
+        graph.node[goal.goal_map]['x'] = goal.target_pose.pose.position.x[0]
+        graph.node[goal.goal_map]['y'] = goal.target_pose.pose.position.y[1]
+
 
         #The cost of moving through a wormhole is nothing. In the future, this
         #could be non-zero if there is an object such as a door or elevator that
@@ -82,7 +89,7 @@ class MultiMapNavigationNavigator():
         while (path[0] != "end"):
             #wormhole
             name = path[0][path[0].find("_") + 1:]
-            #print name
+            print name
             wormhole = None
             for i in self.manager.wormholes:
                 if (i["name"] == name):
