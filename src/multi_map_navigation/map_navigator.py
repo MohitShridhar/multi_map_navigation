@@ -256,11 +256,11 @@ class MultiMapNavigationNavigator():
                 cli.wait_for_result()
 
             rospy.loginfo("Transition: " + str(wormhole_type))
-            #cli = self.manager.transition_action_clients[wormhole_type]
+            cli = self.manager.transition_action_clients[wormhole_type]
 
-            #print wormhole_goal
-            #cli.send_goal(wormhole_goal)
-            #cli.wait_for_result()
+            print wormhole_goal
+            cli.send_goal(wormhole_goal)
+            cli.wait_for_result()
 
             print "DONE AFTER TRANSACTION"
             old_pos = pos
