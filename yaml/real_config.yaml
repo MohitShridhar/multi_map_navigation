@@ -9,7 +9,7 @@ maps:
 wormholes:
   - name: living-room
     type: custom
-    radius: 0.5
+    radius: 0.1
     locations:
       - map: dining-room
         position: [1.47, -0.30]
@@ -17,7 +17,7 @@ wormholes:
         position: [3.440246, 0.963580]
   - name: dining-room
     type: custom
-    radius: 0.5
+    radius: 0.1
     locations:
       - map: living-room
         position: [1.470428, 0.301883]

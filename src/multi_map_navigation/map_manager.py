@@ -1,5 +1,8 @@
 import rospy
 import tf
+import actionlib
+from multi_map_navigation.msg import *
+from multi_map_navigation.srv import *
 from std_msgs.msg import String
 from visualization_msgs.msg import *
 import yaml
@@ -19,16 +22,20 @@ class MultiMapManager(object):
 	transitions = ["door_blast", "elevator_blast", "door_drag"]
         if rospy.has_param('~transition_types'):
             transitions = rospy.get_param("~transition_types").split(" ")
-         
+        
+ 
         for client in transitions:
             if (client.strip() == ""):
                 continue
-                rospy.loginfo("Waiting for " + client)
+            rospy.loginfo("Waiting for " + client)
  
-                if (client.strip() == "elevator_blast"):
-                    cli = actionlib.SimpleActionClient(client, MultiMapNavigationTargetElevatorAction)
-                else:
-                    cli = actionlib.SimpleActionClient(client, MultiMapNavigationTransitionAction)
+            if (client.strip() == "custom"):
+                cli = actionlib.SimpleActionClient(client, MultiMapServerAction)
+
+            if (client.strip() == "elevator_blast"):
+                cli = actionlib.SimpleActionClient(client, MultiMapNavigationTargetElevatorAction)
+            else:
+                cli = actionlib.SimpleActionClient(client, MultiMapNavigationTransitionAction)
                 #cli.wait_for_server()
                 self.transition_action_clients[client] = cli
 

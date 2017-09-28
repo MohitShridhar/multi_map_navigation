@@ -2,6 +2,7 @@ import rospy
 import math
 import random
 import tf
+import yaml
 import networkx as nx
 import actionlib
 import actionlib_msgs
@@ -93,7 +94,6 @@ class MultiMapNavigationNavigator():
             for i in self.manager.wormholes:
                 if (i["name"] == name):
                     wormhole = i
-            print wormhole
             #print "looking for" , name ,"in" , wormhole["locations"]
             for w in wormhole["locations"]:
                print w["map"] , path[1]
@@ -114,13 +114,11 @@ class MultiMapNavigationNavigator():
             wormhole_type = "normal"
             wormhole_goal = None
             if (len(path) > 1):
-                print path[0][path[0].find("_") + 1:] , path[1][path[0].find("_") + 1:], "condition"
-                if (path[0][path[0].find("_") + 1:] != path[1][path[0].find("_") + 1:]):
-                    #wormhole_type = wormhole["type"]
-                    wormhole_goal = MultiMapNavigationTransitionGoal()
-                    wormhole_goal.wormhole = yaml.dump(wormhole)
-                    wormhole_goal.start = int(path[0].split("_")[0])
-                    wormhole_goal.end = int(path[1].split("_")[0])
+                #wormhole_type = wormhole["type"]
+                wormhole_goal = MultiMapNavigationTransitionGoal()
+                wormhole_goal.wormhole = yaml.dump(wormhole)
+                wormhole_goal.start = path[0].split("_")[0]
+                wormhole_goal.end = path[1].split("_")[0]
 
             angle = 0
             radius = None
@@ -149,7 +147,6 @@ class MultiMapNavigationNavigator():
                 offset_angle = 0.0
                 offset_radius = 0.0
                 if (radius):
-                    print offset
                     offset_angle = math.atan2(offset[1], offset[0])
                     offset_radius = math.sqrt(offset[0] * offset[0] + offset[1] * offset[1])
 
@@ -183,7 +180,7 @@ class MultiMapNavigationNavigator():
                 #self.pose_pub.publish(msg)
                 #Select the new map
                 #self.manager.select_map(mapname)
-	        self.manager.current_map_name_pub.publish(mapname)
+	        #self.manager.current_map_name_pub.publish(mapname)
                 emptySrv = Empty()
                 rospy.wait_for_service("/global_localization")
 
@@ -242,14 +239,18 @@ class MultiMapNavigationNavigator():
 
                 rospy.loginfo("Done move_base")
                 offset = self.manager.get_robot_position()
-                print "pos", pos[0], ",", pos[1]
                 offset[0] = offset[0] - pos[0]
                 offset[1] = offset[1] - pos[1]
             else:
                 rospy.loginfo("Skipped move base because the goal location is the current location")
 
 
-            if (wormhole_type == "elevator_blast" and wormhole_goal != None):
+            if (wormhole_type == "custom"):
+                rospy.loginfo("Transition: Custom")
+                cli = self.manager.transition_action_clients[wormhole_type]
+                cli.send_goal(path[1])
+
+            elif (wormhole_type == "elevator_blast" and wormhole_goal != None):
                 rospy.loginfo("Transition: Elevator Blast")
                 next_floor = self.find_target_floor(wormhole, goal.goal_map)
                 self.target_elevator(next_floor, wormhole["name"])
@@ -269,7 +270,6 @@ class MultiMapNavigationNavigator():
             #cli.send_goal(wormhole_goal)
             #cli.wait_for_result()
 
-            print "DONE AFTER TRANSACTION"
             old_pos = pos
             old_angle = angle
             old_north = north
