@@ -86,19 +86,23 @@ class MultiMapNavigationNavigator():
         old_pos = [None, None]
         old_angle = None
 
-        while (path[0] != self.manager.current_map):
+        while (path[0] != goal.goal_map):
             #wormhole
             name = path[0][path[0].find("_") + 1:]
-            print name
-            wormhole = None
+            #wormhole = None
             for i in self.manager.wormholes:
                 if (i["name"] == name):
                     wormhole = i
-            #print wormhole
-            print wormhole["locations"]
-            location = wormhole["locations"][name]
-            pos = location["position"]
-            mapname = location["map"]
+            print wormhole
+            #print "looking for" , name ,"in" , wormhole["locations"]
+            for w in wormhole["locations"]:
+               if path[1] is w["map"]:
+                  location = w
+            #print "Location" , location
+            #pos = location["position"]
+            pos = [graph.node[path[0]]["x"],graph.node[path[0]]["y"]]
+	    print "position ", pos
+            mapname = path[0]
             north = self.manager.map_north
             wormhole_type = "normal"
             wormhole_goal = None
@@ -137,6 +141,7 @@ class MultiMapNavigationNavigator():
                 offset_angle = 0.0
                 offset_radius = 0.0
                 if (radius):
+                    print offset
                     offset_angle = math.atan2(offset[1], offset[0])
                     offset_radius = math.sqrt(offset[0] * offset[0] + offset[1] * offset[1])
 
@@ -170,7 +175,7 @@ class MultiMapNavigationNavigator():
                 #self.pose_pub.publish(msg)
                 #Select the new map
                 #self.manager.select_map(mapname)
-	            #self.manager.current_map_name_pub.publish(mapname)
+	        self.manager.current_map_name_pub.publish(mapname)
                 emptySrv = Empty()
                 #rospy.wait_for_service("/global_localization")
 
@@ -189,6 +194,7 @@ class MultiMapNavigationNavigator():
 
                 #NOT SO SURE HOW IT WORKS
                 offset = self.manager.get_robot_position()
+                print offset , "end offset"
                 offset[0] = offset[0] - pos[0]
                 offset[1] = offset[1] - pos[1]
 
@@ -229,6 +235,7 @@ class MultiMapNavigationNavigator():
 
                 rospy.loginfo("Done move_base")
                 offset = self.manager.get_robot_position()
+                print "pos", pos[0], ",", pos[1]
                 offset[0] = offset[0] - pos[0]
                 offset[1] = offset[1] - pos[1]
             else:
