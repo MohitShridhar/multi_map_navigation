@@ -8,7 +8,7 @@ maps:
 
 wormholes:
   - name: living-room
-    type: normal
+    type: custom
     radius: 0.5
     locations:
       - map: dining-room
@@ -16,7 +16,7 @@ wormholes:
     #  - map: kitchen
     #    position: [3.440246, 0.963580]
   - name: dining-room
-    type: normal
+    type: custom
     radius: 0.5
     locations:
       - map: living-room

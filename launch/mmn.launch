@@ -29,6 +29,6 @@
   <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="my_multi_map_navigation" output="screen">
       <param name="definition_file" value="$(find multi_map_navigation)/yaml/real_config.yaml" />
       <param name="base_frame" value="base_link"/>
-      <param name="transition_types" value="multi_map_transition" />
+      <param name="transition_types" value="custom" />
   </node>
 </launch>
