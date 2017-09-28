@@ -137,6 +137,7 @@ class MultiMapNavigationNavigator():
             offset[0] = offset[0] - pos[0]
             offset[1] = offset[1] - pos[1]
 
+            print "Current map " , self.manager.current_map , " path[0] ", mapname
             #We have switched maps in the wormhole
             if (mapname != self.manager.current_map):
                 print "Switched from " , self.manager.current_map , " to ", mapname
