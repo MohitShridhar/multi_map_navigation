@@ -16,6 +16,10 @@ class MultiMapManager(object):
         
         self.transition_action_clients = {"normal": None}
  
+	transitions = ["door_blast", "elevator_blast", "door_drag"]
+        if rospy.has_param('~transition_types'):
+            transitions = rospy.get_param("~transition_types").split(" ")
+         
         for client in transitions:
             if (client.strip() == ""):
                 continue
