@@ -13,6 +13,20 @@ class MultiMapManager(object):
         self.current_map_name_pub = rospy.Publisher("multi_map_server/map_name", String, queue_size=1)
         self.wormhole_marker_pub = rospy.Publisher('wormhole_marker', MarkerArray, queue_size=1)
         self.n_markers = 0
+        
+        self.transition_action_clients = {"normal": None}
+ 
+        for client in transitions:
+            if (client.strip() == ""):
+                continue
+                rospy.loginfo("Waiting for " + client)
+ 
+                if (client.strip() == "elevator_blast"):
+                    cli = actionlib.SimpleActionClient(client, MultiMapNavigationTargetElevatorAction)
+                else:
+                    cli = actionlib.SimpleActionClient(client, MultiMapNavigationTransitionAction)
+                #cli.wait_for_server()
+                self.transition_action_clients[client] = cli
 
         rospy.loginfo("loading map")
 
