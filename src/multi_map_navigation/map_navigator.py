@@ -48,7 +48,6 @@ class MultiMapNavigationNavigator():
         self.preempt_goal = msg.data
 
     def execute_cb(self, goal):
-        #print self.manager.current_map
         #print goal.goal_map
         graph = nx.Graph()
 
@@ -108,7 +107,6 @@ class MultiMapNavigationNavigator():
             position_pose.pose.orientation.w = 1
             self.current_goal_pub.publish(position_pose)
             #pos = [graph.node[path[1]]["x"],graph.node[path[1]]["y"]]
-	    print "position ", pos
             mapname = path[0]
             north = self.manager.map_north
             wormhole_type = "normal"
@@ -135,9 +133,13 @@ class MultiMapNavigationNavigator():
                 if (radius != None):
                     rospy.logwarn("Angle ignored because radius specified")
 
+            offset = self.manager.get_robot_position()
+            offset[0] = offset[0] - pos[0]
+            offset[1] = offset[1] - pos[1]
 
             #We have switched maps in the wormhole
             if (mapname != self.manager.current_map):
+                print "Switched from " , self.manager.current_map , " to ", mapname
                 self.manager.current_map = mapname
                 #Create and publish the new pose for AMCL
                 msg = PoseWithCovarianceStamped()
@@ -198,10 +200,6 @@ class MultiMapNavigationNavigator():
 
 
                 #NOT SO SURE HOW IT WORKS
-                offset = self.manager.get_robot_position()
-                offset[0] = offset[0] - pos[0]
-                offset[1] = offset[1] - pos[1]
-
                 rospy.loginfo("Wait for movebase")
                 self.move_base.wait_for_server()
                 rospy.loginfo("Done")
@@ -238,30 +236,27 @@ class MultiMapNavigationNavigator():
                     return None;
 
                 rospy.loginfo("Done move_base")
-                offset = self.manager.get_robot_position()
-                offset[0] = offset[0] - pos[0]
-                offset[1] = offset[1] - pos[1]
             else:
                 rospy.loginfo("Skipped move base because the goal location is the current location")
 
 
-            if (wormhole_type == "custom"):
-                rospy.loginfo("Transition: Custom")
-                cli = self.manager.transition_action_clients[wormhole_type]
-                cli.send_goal(path[1])
+                if (wormhole_type == "custom"):
+                    rospy.loginfo("Transition: Custom")
+                    cli = self.manager.transition_action_clients[wormhole_type]
+                    cli.send_goal(path[1])
 
-            elif (wormhole_type == "elevator_blast" and wormhole_goal != None):
-                rospy.loginfo("Transition: Elevator Blast")
-                next_floor = self.find_target_floor(wormhole, goal.goal_map)
-                self.target_elevator(next_floor, wormhole["name"])
+                elif (wormhole_type == "elevator_blast" and wormhole_goal != None):
+                    rospy.loginfo("Transition: Elevator Blast")
+                    next_floor = self.find_target_floor(wormhole, goal.goal_map)
+                    self.target_elevator(next_floor, wormhole["name"])
 
-            elif (wormhole_type != "normal" and wormhole_goal != None):
-                rospy.loginfo("Transition: " + str(wormhole_type))
-                cli = self.manager.transition_action_clients[wormhole_type]
+                elif (wormhole_type != "normal" and wormhole_goal != None):
+                    rospy.loginfo("Transition: " + str(wormhole_type))
+                    cli = self.manager.transition_action_clients[wormhole_type]
 
-                #print wormhole_goal
-                cli.send_goal(wormhole_goal)
-                cli.wait_for_result()
+                    #print wormhole_goal
+                    cli.send_goal(wormhole_goal)
+                    cli.wait_for_result()
 
             #rospy.loginfo("Transition: " + str(wormhole_type))
             #cli = self.manager.transition_action_clients[wormhole_type]
