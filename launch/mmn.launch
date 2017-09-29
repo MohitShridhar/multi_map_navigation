@@ -15,7 +15,7 @@
   <!-- Name - Must be consistent with spawn name [To edit]:  -->
   <!-- Launch elevator manager -->
   <!--node pkg="multi_map_navigation" type="elevator_manager.py" name="elevator_blast" output="screen"/-->
-  <node pkg="multi_map_navigation" type="multimap_transition.py" name="map_transitions" output="screen"/>
+  <node pkg="multi_map_navigation" type="multimap_transition.py" name="custom" output="screen"/>
 
   <!-- NAVIGATION -->
   <!-- visualize navigation goals -->

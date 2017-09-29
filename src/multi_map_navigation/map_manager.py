@@ -17,9 +17,9 @@ class MultiMapManager(object):
         self.wormhole_marker_pub = rospy.Publisher('wormhole_marker', MarkerArray, queue_size=1)
         self.n_markers = 0
         
-        self.transition_action_clients = {"normal": None}
- 
-	transitions = ["door_blast", "elevator_blast", "door_drag"]
+        self.transition_action_clients = {}
+        transitions = ["door_blast", "elevator_blast", "door_drag"]
+
         if rospy.has_param('~transition_types'):
             transitions = rospy.get_param("~transition_types").split(" ")
         
@@ -30,15 +30,16 @@ class MultiMapManager(object):
             rospy.loginfo("Waiting for " + client)
  
             if (client.strip() == "custom"):
+                rospy.loginfo("Adding Custom with MultiMapServerAction")
                 cli = actionlib.SimpleActionClient(client, MultiMapServerAction)
-
-            if (client.strip() == "elevator_blast"):
+            elif (client.strip() == "elevator_blast"):
                 cli = actionlib.SimpleActionClient(client, MultiMapNavigationTargetElevatorAction)
             else:
                 cli = actionlib.SimpleActionClient(client, MultiMapNavigationTransitionAction)
                 #cli.wait_for_server()
-                self.transition_action_clients[client] = cli
-
+            self.transition_action_clients[client] = cli
+        print "Transaciton Clients" , self.transition_action_clients
+        print self.transition_action_clients["custom"]
         rospy.loginfo("loading map")
 
         self.definition_file = None
@@ -78,7 +79,6 @@ class MultiMapManager(object):
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
                 rospy.logwarn("Failed to get robot transform")
                 rospy.sleep(0.1)
-        print "returning None"
         return None
 
     def get_robot_rotation(self):
@@ -86,7 +86,6 @@ class MultiMapManager(object):
             try:
                 self.listener.waitForTransform("/map", self.base_frame, rospy.Time(), rospy.Duration(100))
                 (trans,rot) = self.listener.lookupTransform('/map',self.base_frame, rospy.Time())
-		print "worked"
                 return rot
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
                 rospy.logwarn("Failed to get robot transform")
@@ -98,10 +97,11 @@ class MultiMapManager(object):
 
     def publish_markers(self):
         n_markers = 0
+        rospy.sleep(2)
         marker_array = MarkerArray()
         for i in self.wormholes:
             loc = False
-            #print "Current wormhole", i["name"]
+            print "Current wormhole", i["name"] , "current_map " , self.current_map
             if i["name"] == self.current_map:
                 for j in i["locations"]:
                     wormhole_marker = Marker()
