@@ -8,7 +8,7 @@
     <rosparam command="delete" param="/move_base"/>
 
     <!-- common navigation launch file -->
-    <include file="$(find mdr_2dnav)/ros/launch/multi_map_common.launch">
+    <include file="$(find multi_map_navigation)/launch/multi_map_common.launch">
     </include>
 
     <!-- move_base navigation -->
