@@ -94,14 +94,15 @@ class MultiMapNavigationNavigator():
             name = path[0][path[0].find("_") + 1:]
             #wormhole = None
             for i in self.manager.wormholes:
-                if (i["name"] == name):
+                if (i["name"] == self.manager.current_map):
                     wormhole = i
-            #print "looking for" , name ,"in" , wormhole["locations"]
+            print "looking for" , self.manager.current_map ,"in" , wormhole["locations"]
             for w in wormhole["locations"]:
               if len(path)> 1:
                   if path[1] is w["map"]:
                       location = w
             pos = location["position"]
+            print "Send Position " , pos
             position_pose = PoseStamped()
             position_pose.header.frame_id = "map"
             position_pose.pose.position.x = pos[0]
@@ -391,5 +392,3 @@ class MultiMapNavigationNavigator():
             return None;
 
         rospy.loginfo("Done move_base")
-
-

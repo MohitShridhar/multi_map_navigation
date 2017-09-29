@@ -7,7 +7,7 @@
 
   <!-- Map_server-->
   <arg name="initial_map" default="living-room" />
-  <node name="multi_map_server" pkg="multi_map_server" type="multi_map_server" args="$(arg initial_map)"/>
+  <!--node name="multi_map_server" pkg="multi_map_server" type="multi_map_server" args="$(arg initial_map)"/-->
 
 
   <!--node pkg="tf" type="static_transform_publisher" name="odom_to_map"

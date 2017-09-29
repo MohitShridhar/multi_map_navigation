@@ -49,7 +49,7 @@ class MultiMapManager(object):
         if (not self.loadyaml(self.definition_file)):
             return
         #rospy.loginfo("Waiting for position")
-
+        #rospy.sleep(3)
         self.get_robot_position()
         self.ready = True
 
@@ -98,16 +98,17 @@ class MultiMapManager(object):
         marker_array = MarkerArray()
         for i in self.wormholes:
             if i["name"] == self.current_map:
+                print "Markers" , i
                 for j in i["locations"]:
                     wormhole_marker = Marker()
-                    wormhole_marker.header.frame_id = "/map"
+                    wormhole_marker.header.frame_id = "map"
                     wormhole_marker.header.stamp = rospy.get_rostime()
                     wormhole_marker.ns = "multimna"
                     wormhole_marker.type = Marker.CYLINDER
                     wormhole_marker.action = Marker.MODIFY
                     wormhole_marker.id = n_markers
                     wormhole_marker.pose.position.x = j["position"][0]
-                    wormhole_marker.pose.position.y = j["position"][0]
+                    wormhole_marker.pose.position.y = j["position"][1]
                     wormhole_marker.pose.position.z = 0.25
                     wormhole_marker.pose.orientation.x = 0.0
                     wormhole_marker.pose.orientation.y = 0.0

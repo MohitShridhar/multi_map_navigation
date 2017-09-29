@@ -20,6 +20,6 @@ wormholes:
     radius: .5
     locations:
       - map: living-room
-        position: [1.47, -0.30]
+        position: [-1.47, 0.30]
       - map: kitchen
-        position: [3.440246, 0.963580]
+        position: [-3.440246, -0.963580]
