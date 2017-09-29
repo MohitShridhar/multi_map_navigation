@@ -30,8 +30,8 @@
         
         <!-- global costmap parameters -->
         <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="global_costmap"/>
-        <rosparam file="$(find multi_map_navigation)/config/multimap/costmap_common_params.yaml" command="load" ns="global_costmap"/>
-        <rosparam file="$(find multi_map_navigation)/config/multimap/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find multi_map_navigation)/config/multi_map/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+        <rosparam file="$(find multi_map_navigation)/config/multi_map/global_costmap_params.yaml" command="load" />
         
         <!-- local costmap parameters -->
         <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="local_costmap"/>
