@@ -1,8 +1,0 @@
-global_costmap:
-  global_frame: /map                    # default : /map
-  inflation_radius: 0.6                 # default : 0.46
-  robot_base_frame: base_link      # default : base_footprint
-  update_frequency: 0.3                 # default : 0.3
-  publish_frequency: 0.3                # default : 0.3
-  static_map: true                      # default : true
-  footprint_padding: 0.0                # default : 0.0

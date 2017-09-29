@@ -30,13 +30,13 @@
         
         <!-- global costmap parameters -->
         <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="global_costmap"/>
-        <rosparam file="$(find multi_map_navigation)/config/multi_map/costmap_common_params.yaml" command="load" ns="global_costmap"/>
-        <rosparam file="$(find multi_map_navigation)/config/multi_map/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/global_costmap_params.yaml" command="load" />
         
         <!-- local costmap parameters -->
         <rosparam file="$(find mdr_2dnav)/ros/config/common/robot_footprint.yaml" command="load" ns="local_costmap"/>
-        <rosparam file="$(find multi_map_navigation)/config/dwa/costmap_common_params.yaml" command="load" ns="local_costmap" />
-        <rosparam file="$(find multi_map_navigation)/config/dwa/local_costmap_params" command="load" />    
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find mdr_2dnav)/ros/config/dwa/local_costmap_params.yaml" command="load" />    
         
         <!-- recovery behavior parameters-->    
         <rosparam file="$(find mdr_2dnav)/ros/config/recovery_behaviors/force_field_parameters.yaml" command="load" ns="force_field_recovery"/>    
