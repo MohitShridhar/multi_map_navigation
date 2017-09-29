@@ -94,11 +94,9 @@ class MultiMapManager(object):
 
     def publish_markers(self):
         n_markers = 0
-        rospy.sleep(2)
+        #rospy.sleep(2)
         marker_array = MarkerArray()
         for i in self.wormholes:
-            loc = False
-            print "Current wormhole", i["name"] , "current_map " , self.current_map
             if i["name"] == self.current_map:
                 for j in i["locations"]:
                     wormhole_marker = Marker()
@@ -130,7 +128,7 @@ class MultiMapManager(object):
                     marker_array.markers.append(wormhole_marker)
                     n_markers = n_markers + 1
 
-            self.wormhole_marker_pub.publish(marker_array)
+        self.wormhole_marker_pub.publish(marker_array)
 
 
         if (self.n_markers > n_markers):

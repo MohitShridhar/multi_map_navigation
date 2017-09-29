@@ -23,4 +23,4 @@ if (__name__ == "__main__"):
 
     while not rospy.is_shutdown():
         manager.publish_markers()
-        #rospy.sleep(1.0)
+        rospy.sleep(1.0)

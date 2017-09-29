@@ -88,7 +88,8 @@ class MultiMapNavigationNavigator():
         
         state = 0
 
-        while (goal.goal_map is not self.manager.current_map):
+        while (goal.goal_map != self.manager.current_map):
+            print goal.goal_map , self.manager.current_map
             #wormhole
             name = path[0][path[0].find("_") + 1:]
             #wormhole = None
@@ -109,7 +110,6 @@ class MultiMapNavigationNavigator():
             self.current_goal_pub.publish(position_pose)
             #pos = [graph.node[path[1]]["x"],graph.node[path[1]]["y"]]
             mapname = path[0]
-            north = self.manager.map_north
             wormhole_type = "normal"
             wormhole_goal = None
 
@@ -127,18 +127,12 @@ class MultiMapNavigationNavigator():
             offset[0] = offset[0] - pos[0]
             offset[1] = offset[1] - pos[1]
 
-            #We have switched maps in the wormhole
-            if (state is 2):
-                self.afterSwitchingMap(mapname, location, wormhole, offset)
-                path = path[1:]
-
             if (state is 0):
                 self.drivingToWormhole(location, wormhole)
                 self.manager.current_map = mapname
                 state = 1
             
-            if (state is 1):
-                
+            if (state is 1):        
                 rospy.loginfo("Skipped move base because the goal location is the current location")
                 if (wormhole_type == "custom"):
                     rospy.loginfo("Transition: custom")
@@ -160,9 +154,9 @@ class MultiMapNavigationNavigator():
                     cli.send_goal(wormhole_goal)
                     cli.wait_for_result()
                 state = 2
-
-            print path
-
+                self.afterSwitchingMap(mapname, location, wormhole, offset)
+                path = path[1:]
+                mapname = path[0]
 
         #Get to the end point
         msg = MoveBaseGoal()
@@ -198,7 +192,6 @@ class MultiMapNavigationNavigator():
 
         pos_str = waiting_point[0]
         waiting_pose = [float(x) for x in pos_str.split()]
-        print waiting_pose
 
         msg = MoveBaseGoal()
         msg.target_pose.header.stamp = rospy.get_rostime()
@@ -225,7 +218,6 @@ class MultiMapNavigationNavigator():
         bad_count = 0
         while not rospy.is_shutdown() and bad:
             rospy.loginfo("Send move base goal radius: " + str(radius))
-            print "With Pose " , msg
             self.move_base.send_goal(msg)
 
             while (self.move_base.get_state() == GoalStatus.PENDING or \
@@ -251,7 +243,7 @@ class MultiMapNavigationNavigator():
             if (self.move_base.get_state() == GoalStatus.SUCCEEDED or bad == False):
                 bad = False
             else:
-                rospy.sleep(1.0)
+                rospy.sleep(0.5)
             if bad:
                 bad_count = bad_count + 1
                 if (bad_count > 1):
