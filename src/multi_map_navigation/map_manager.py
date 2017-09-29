@@ -38,9 +38,6 @@ class MultiMapManager(object):
                 cli = actionlib.SimpleActionClient(client, MultiMapNavigationTransitionAction)
                 #cli.wait_for_server()
             self.transition_action_clients[client] = cli
-        print "Transaciton Clients" , self.transition_action_clients
-        print self.transition_action_clients["custom"]
-        rospy.loginfo("loading map")
 
         self.definition_file = None
         if rospy.has_param('~definition_file'):
@@ -53,7 +50,7 @@ class MultiMapManager(object):
             return
         #rospy.loginfo("Waiting for position")
 
-        #self.get_robot_position()
+        self.get_robot_position()
         self.ready = True
 
         rospy.loginfo("Starting")
@@ -66,7 +63,7 @@ class MultiMapManager(object):
             self.base_frame = rospy.get_param("~base_frame")
 
         self.base_frame = "/" + self.base_frame
-        rospy.loginfo("base_frame of " + self.robot_namespace + " set as " + self.base_frame)
+        rospy.loginfo("base_frame set as " + self.base_frame)
 
         return None
 

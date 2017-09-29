@@ -20,7 +20,6 @@ if (__name__ == "__main__"):
     navigator = MultiMapNavigationNavigator(manager)
 
     reinit_service = rospy.Service('map_manager/reinit', ReinitManager, handle_reinit_call)
-    manager.publish_current_map_name()
 
     while not rospy.is_shutdown():
         manager.publish_markers()

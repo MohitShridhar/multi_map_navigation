@@ -88,7 +88,7 @@ class MultiMapNavigationNavigator():
         
         state = 0
 
-        while (len(path) > 0):
+        while (goal.goal_map is not self.manager.current_map):
             #wormhole
             name = path[0][path[0].find("_") + 1:]
             #wormhole = None
@@ -112,6 +112,7 @@ class MultiMapNavigationNavigator():
             north = self.manager.map_north
             wormhole_type = "normal"
             wormhole_goal = None
+
             if (len(path) > 1):
                 wormhole_type = wormhole["type"]
                 wormhole_goal = MultiMapNavigationTransitionGoal()
@@ -126,7 +127,6 @@ class MultiMapNavigationNavigator():
             offset[0] = offset[0] - pos[0]
             offset[1] = offset[1] - pos[1]
 
-            print "Current map " , self.manager.current_map , " mapname ", mapname
             #We have switched maps in the wormhole
             if (state is 2):
                 self.afterSwitchingMap(mapname, location, wormhole, offset)
@@ -140,7 +140,6 @@ class MultiMapNavigationNavigator():
             if (state is 1):
                 
                 rospy.loginfo("Skipped move base because the goal location is the current location")
-                print "wormhole_type " , wormhole_type
                 if (wormhole_type == "custom"):
                     rospy.loginfo("Transition: custom")
                     rospy.loginfo("Going to" + path[1])
@@ -149,6 +148,7 @@ class MultiMapNavigationNavigator():
                     cli = self.manager.transition_action_clients[wormhole_type] 
                     cli.send_goal(custom_goal)
                     cli.wait_for_result()
+                    self.manager.current_map = path[1]
                 if(wormhole_type == "elevator_blast" and wormhole_goal != None):
                     rospy.loginfo("Transition: Elevator Blast")
                     next_floor = self.find_target_floor(wormhole, goal.goal_map)
@@ -161,9 +161,6 @@ class MultiMapNavigationNavigator():
                     cli.wait_for_result()
                 state = 2
 
-            old_pos = pos
-            old_angle = angle
-            old_north = north
             print path
 
 
@@ -293,6 +290,7 @@ class MultiMapNavigationNavigator():
         
     def afterSwitchingMap(self,mapname, location, wormhole, offset):
         #Create and publish the new pose for AMCL
+        print "Switching Maps"
         msg = PoseWithCovarianceStamped()
         msg.header.frame_id = "/map"
         msg.header.stamp = rospy.get_rostime()
