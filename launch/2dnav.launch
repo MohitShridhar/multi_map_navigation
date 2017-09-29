@@ -5,7 +5,7 @@
   <arg name="robot" default="$(optenv ROBOT !!ROBOT NOT SET!!)" />
   <arg name="robot_env" default="$(optenv ROBOT_ENV !!ROBOT_ENV NOT SET!!)" />
 
-  <include file="$(find multi_map_navigation)/ros/launch/2dnav_$(arg nav_mode).launch">
+  <include file="$(find multi_map_navigation)/launch/2dnav_$(arg nav_mode).launch">
     <arg name="robot" value="$(arg robot)" />
   </include>
 
