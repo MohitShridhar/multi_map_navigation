@@ -98,7 +98,6 @@ class MultiMapManager(object):
         marker_array = MarkerArray()
         for i in self.wormholes:
             if i["name"] == self.current_map:
-                print "Markers" , i
                 for j in i["locations"]:
                     wormhole_marker = Marker()
                     wormhole_marker.header.frame_id = "map"
