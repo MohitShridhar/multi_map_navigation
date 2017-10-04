@@ -1,0 +1,39 @@
+start_map: kitchen
+
+maps:
+  - name: kitchen
+    north_angle: 1.5707963267948966
+  - name: shelf
+    north_angle: 1.5707963267948966
+  - name: dining-room
+    north_angle: 1.5707963267948966
+
+wormholes:
+  - name: elevator1
+    type: elevator_blast
+    radius: 0.5
+    locations:
+      - map: kitchen
+        position: [2.0, 0.4]
+        waiting_point: [3.0 0.4 3.132] # x, y, yaw
+        floor: 0
+        height: 2.0
+      - map: shelf
+        position: [4.0, 4.0]
+        waiting_point: [8.0 8.0 3.135]
+        floor: 1
+        height: 2.0
+  - name: elevator2
+    type: elevator_blast
+    radius: 0.5
+    locations:
+      - map: shelf
+        position: [5.0, 5,0]
+        waiting_point: [5.382 5.130 3.132] # x, y, yaw
+        floor: 1
+        height: 2.0
+      - map: living-room
+        position: [-2.0, -2.0]
+        waiting_point: [14.382 16.130 3.132] # x, y, yaw
+        floor: 2
+        height: 2.0

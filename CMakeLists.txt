@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib
   actionlib_msgs
   map_store
+  map_server
   visualization_msgs
   move_base_msgs
   nav_msgs
@@ -15,13 +16,13 @@ find_package(catkin REQUIRED COMPONENTS
   nodelet
   rviz
   tf
-  map_server
 )
 
+catkin_python_setup()
 # NAVIGATION ----------------
 
 # generate action files
-add_action_files(DIRECTORY action FILES MultiMapNavigation.action MultiMapNavigationTransition.action MultiMapNavigationTargetElevator.action)
+add_action_files(DIRECTORY action FILES MultiMapNavigation.action MultiMapNavigationTransition.action MultiMapNavigationTargetElevator.action MultiMapServer.action)
 
 # generate service files
 add_service_files(DIRECTORY srv FILES SetMap.srv ReinitManager.srv)
@@ -30,7 +31,7 @@ add_service_files(DIRECTORY srv FILES SetMap.srv ReinitManager.srv)
 add_message_files(DIRECTORY msg FILES)
 
 # messages dependencies
-generate_messages(DEPENDENCIES std_msgs actionlib_msgs geometry_msgs) 
+generate_messages(DEPENDENCIES std_msgs actionlib_msgs geometry_msgs)
 
 
 
@@ -41,6 +42,7 @@ catkin_package(
   CATKIN_DEPENDS rospy actionlib map_store visualization_msgs move_base_msgs nav_msgs warehouse_ros std_msgs message_runtime nodelet rviz tf map_server
 )
 
+
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
@@ -48,6 +50,8 @@ include_directories(
 link_directories(
   ${catkin_LIBRARY_DIRS}
 )
+
+add_definitions(-DHAVE_NEW_YAMLCPP)
 
 ## This plugin includes Qt widgets, so we must include Qt like so:
 find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
@@ -85,7 +89,7 @@ install(TARGETS
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(FILES 
+install(FILES
   plugin_description.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
@@ -95,6 +99,6 @@ install(DIRECTORY media/
 install(DIRECTORY icons/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/icons)
 
-install(DIRECTORY src/scripts/ 
+install(DIRECTORY src/scripts/
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

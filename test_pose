@@ -1,0 +1,32 @@
+#!/bin/sh
+
+rostopic pub -1 /multi_map_navigation/move/goal multi_map_navigation/MultiMapNavigationActionGoal "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: 'map'
+goal_id:
+  stamp:
+    secs: 0
+    nsecs: 0
+  id: 'test_goal'
+goal:
+  target_pose:
+    header:
+      seq: 0
+      stamp:
+        secs: 0
+        nsecs: 0
+      frame_id: 'map'
+    pose:
+      position:
+        x: 0.0
+        y: 0.0
+        z: 0.0
+      orientation:
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+  goal_map: 'dining-room'"

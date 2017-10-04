@@ -153,7 +153,7 @@ class MapServer
       }
 
       ROS_INFO("Loading map from image \"%s\"", mapfname.c_str());
-      map_server::loadMapFromFile(&map_resp_,mapfname.c_str(),res,negate,occ_th,free_th, origin, trinary);
+      map_server::loadMapFromFile(&map_resp_,mapfname.c_str(),res,negate,occ_th,free_th, origin);//, trinary);
       map_resp_.map.info.map_load_time = ros::Time::now();
       map_resp_.map.header.frame_id = frame_id;
       map_resp_.map.header.stamp = ros::Time::now();

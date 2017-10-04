@@ -1,0 +1,33 @@
+start_map: living-room
+
+maps:
+  - name: kitchen
+    north_angle: 1.5707963267948966
+  - name: shelf
+    north_angle: 1.5707963267948966
+  - name: dining-room
+    north_angle: 1.5707963267948966
+  - name: living-room
+    north_angle: 1.5707963267948966
+
+wormholes:
+  - name: kitchen
+    type: normal
+    radius: 0.5
+    locations:
+      - map: dining-room
+        position: [0.0, 0.0]
+        waiting_point: [0.0, 0.0]
+      - map: shelf
+        position: [2.0, 2.0]
+        waiting_point: [2.0, 2.0]
+  - name: living-room
+    type: normal
+    radius: 0.5
+    locations:
+      - map: shelf
+        position: [1.0, 3,0]
+        waiting_point: [1.0, 3,0]
+      - map: dining-room
+        position: [-2.0, -2.0]
+        waiting_point: [-2.0, -2.0]
