@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- set robot environment -->
+    <arg name="init_map" default="kitchen"/>
+    <include file="$(find mdr_2dnav)/ros/launch/amcl.launch" />
+
+</launch>

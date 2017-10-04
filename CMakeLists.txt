@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
+catkin_python_setup()
 # NAVIGATION ----------------
 
 # generate action files

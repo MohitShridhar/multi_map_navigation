@@ -1,0 +1,25 @@
+start_map: living-room
+
+maps:
+  - name: living-room
+    north_angle: 0.0
+  - name: dining-room
+    north_angle: 0.0
+
+wormholes:
+  - name: living-room
+    type: custom
+    radius: .5
+    locations:
+      - map: dining-room
+        position: [1.47, 1.30]
+      - map: kitchen
+        position: [1.5, 2.5]
+  - name: dining-room
+    type: custom
+    radius: .5
+    locations:
+      - map: living-room
+        position: [1.47, 1.30]
+      - map: kitchen
+        position: [1.5, 2.5]

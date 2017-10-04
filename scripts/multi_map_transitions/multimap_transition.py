@@ -30,10 +30,10 @@ from std_msgs.msg import String
 
 class MultiMapControl:
     def __init__(self):
-        self.ac_server = actionlib.SimpleActionServer("multi_map_transition", MultiMapServerAction, execute_cb=self.call_multiMap, auto_start=False)
+        self.ac_server = actionlib.SimpleActionServer("custom", MultiMapServerAction, execute_cb=self.call_multiMap, auto_start=False)
         rospy.loginfo("Initializing Multimap Transition")
         # This relies on the 'dynamic_gazebo_models' package
-        self.pub_map = rospy.Publisher('/multi_map_server/map_name', String, queue_size=10)
+        self.pub_map = rospy.Publisher('multi_map_server/map_name', String, queue_size=1)
         self.ac_server.start()
         rospy.loginfo("Started actionlib server")
 
@@ -43,6 +43,6 @@ class MultiMapControl:
         self.ac_server.set_succeeded()
 
 if __name__ == '__main__':
-    rospy.init_node("multi_map_transition_server")
+    rospy.init_node("custom")
     blast = MultiMapControl()
     rospy.spin()

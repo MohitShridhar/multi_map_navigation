@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rostopic pub -1 /multi_map_navigation/move/goal multi_map_navigation/MultiMapNavigationActionGoal "header:  
+rostopic pub -1 /multi_map_navigation/move/goal multi_map_navigation/MultiMapNavigationActionGoal "header:
   seq: 0
   stamp:
     secs: 0
@@ -10,7 +10,7 @@ goal_id:
   stamp:
     secs: 0
     nsecs: 0
-  id: 'goal1'
+  id: 'test_goal'
 goal:
   target_pose:
     header:
@@ -29,4 +29,4 @@ goal:
         y: 0.0
         z: 0.0
         w: 1.0
-  goal_map: 'kitchen'"
+  goal_map: 'dining-room'"
