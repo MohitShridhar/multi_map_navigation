@@ -60,13 +60,11 @@ class MultiMapNavigationNavigator():
         nx.set_node_attributes(self.graph,"x", 0)
         nx.set_node_attributes(self.graph,"y", 0)
 
-        self.plotGraph()
-
     def plotGraph(self):
         pos = nx.spring_layout(self.graph)
         nx.draw(self.graph, pos, with_labels=True)
-        node_labels = nx.get_node_attributes(self.graph,'x')
-        nx.draw_networkx_labels(self.graph, pos, labels = node_labels)
+        #node_labels = nx.get_node_attributes(self.graph,'x')
+        #nx.draw_networkx_labels(self.graph, pos, labels = node_labels)
         plt.show()
 
     def cancel_cb(self, msg):
@@ -90,11 +88,15 @@ class MultiMapNavigationNavigator():
         #could slow the robot's motion.
 
         #Create the graph for each of the wormholes
+        self.graph.add_edge("start",self.manager.current_map,weight = 0)
+
         for w in self.manager.wormholes:
             for l in w["locations"]:
                 node_pose = [self.graph.node[w["name"]]['x'],  self.graph.node[w["name"]]['y']]
                 self.graph.add_edge(w["name"],l["map"], weight = calc_distance(node_pose, l["position"]))
 
+        self.graph.add_edge(goal.goal_map,"end",weight = 0)
+        self.plotGraph()
         path = nx.astar_path(self.graph, self.manager.current_map, goal.goal_map)
         print "PATH FOUND", path , " from " , self.manager.current_map , " to " , goal.goal_map
 
