@@ -9,6 +9,8 @@ import actionlib_msgs
 from std_msgs.msg import Bool
 from std_srvs.srv import Empty
 
+import matplotlib.pyplot as plt
+
 from nav_msgs.srv import *
 from geometry_msgs.msg import *
 from multi_map_navigation.msg import *
@@ -44,27 +46,43 @@ class MultiMapNavigationNavigator():
         self.preempt_goal = False
         self.cancel_goals_sub = rospy.Subscriber("/cancel_all_goals", Bool, self.cancel_cb)
 
+        self.createGraph()
+
+    def createGraph(self):
+        self.graph = nx.Graph()
+        self.graph.add_node("start")
+
+        for n in self.manager.maps:
+            rospy.loginfo("Adding node !"+n)
+            self.graph.add_node(n)
+
+        self.graph.add_node("end")
+        nx.set_node_attributes(self.graph,"x", 0)
+        nx.set_node_attributes(self.graph,"y", 0)
+
+        self.plotGraph()
+
+    def plotGraph(self):
+        pos = nx.spring_layout(self.graph)
+        nx.draw(self.graph, pos, with_labels=True)
+        node_labels = nx.get_node_attributes(self.graph,'x')
+        nx.draw_networkx_labels(self.graph, pos, labels = node_labels)
+        plt.show()
+
     def cancel_cb(self, msg):
         self.preempt_goal = msg.data
 
     def execute_cb(self, goal):
         #print goal.goal_map
-        graph = nx.Graph()
-
-        for n in self.manager.maps:
-            graph.add_node(n)
-
-        nx.set_node_attributes(graph,"x", 0)
-        nx.set_node_attributes(graph,"y", 0)
+        #Node of current_map must match with current pose
         robot_pos = self.manager.get_robot_position()
 
-        #Node of current_map must match with current pose
-        graph.node[self.manager.current_map]['x'] = robot_pos[0]
-        graph.node[self.manager.current_map]['y'] = robot_pos[1]
+        self.graph.node[self.manager.current_map]['x'] = robot_pos[0]
+        self.graph.node[self.manager.current_map]['y'] = robot_pos[1]
 
         #Node of end goal must match with goal pose
-        graph.node[goal.goal_map]['x'] = goal.target_pose.pose.position.x
-        graph.node[goal.goal_map]['y'] = goal.target_pose.pose.position.y
+        self.graph.node[goal.goal_map]['x'] = goal.target_pose.pose.position.x
+        self.graph.node[goal.goal_map]['y'] = goal.target_pose.pose.position.y
 
 
         #The cost of moving through a wormhole is nothing. In the future, this
@@ -74,10 +92,10 @@ class MultiMapNavigationNavigator():
         #Create the graph for each of the wormholes
         for w in self.manager.wormholes:
             for l in w["locations"]:
-                node_pose = [graph.node[w["name"]]['x'],  graph.node[w["name"]]['y']]
-                graph.add_edge(w["name"],l["map"], weight = calc_distance(node_pose, l["position"]))
+                node_pose = [self.graph.node[w["name"]]['x'],  self.graph.node[w["name"]]['y']]
+                self.graph.add_edge(w["name"],l["map"], weight = calc_distance(node_pose, l["position"]))
 
-        path = nx.astar_path(graph, self.manager.current_map, goal.goal_map)
+        path = nx.astar_path(self.graph, self.manager.current_map, goal.goal_map)
         print "PATH FOUND", path , " from " , self.manager.current_map , " to " , goal.goal_map
 
         offset = []
@@ -85,7 +103,7 @@ class MultiMapNavigationNavigator():
 
         old_pos = [None, None]
         old_angle = None
-        
+
         state = 0
 
         while (goal.goal_map != self.manager.current_map):
@@ -106,7 +124,7 @@ class MultiMapNavigationNavigator():
             position_pose = PoseStamped()
             position_pose.header.frame_id = "map"
             position_pose.pose.position.x = pos[0]
-            position_pose.pose.position.y = pos[1] 
+            position_pose.pose.position.y = pos[1]
             position_pose.pose.orientation.w = 1
             self.current_goal_pub.publish(position_pose)
             #pos = [graph.node[path[1]]["x"],graph.node[path[1]]["y"]]
@@ -132,15 +150,15 @@ class MultiMapNavigationNavigator():
                 self.drivingToWormhole(location, wormhole)
                 self.manager.current_map = mapname
                 state = 1
-            
-            if (state is 1):        
+
+            if (state is 1):
                 rospy.loginfo("Skipped move base because the goal location is the current location")
                 if (wormhole_type == "custom"):
                     rospy.loginfo("Transition: custom")
                     rospy.loginfo("Going to" + path[1])
                     custom_goal = MultiMapServerGoal()
                     custom_goal.map_name = path[1]
-                    cli = self.manager.transition_action_clients[wormhole_type] 
+                    cli = self.manager.transition_action_clients[wormhole_type]
                     cli.send_goal(custom_goal)
                     cli.wait_for_result()
                     self.manager.current_map = path[1]
@@ -280,7 +298,7 @@ class MultiMapNavigationNavigator():
                             bad = False
                     bad = True #Make sure we are still bad for actual motion
         return True
-        
+
     def afterSwitchingMap(self,mapname, location, wormhole, offset):
         #Create and publish the new pose for AMCL
         print "Switching Maps"
@@ -291,7 +309,7 @@ class MultiMapNavigationNavigator():
 
         offset_angle = 0.0
         offset_radius = 0.0
-        
+
         angle = 0
         if "radius" in wormhole:
             offset_angle = math.atan2(offset[1], offset[0])
@@ -343,7 +361,7 @@ class MultiMapNavigationNavigator():
         rospy.loginfo("Wait for movebase")
         self.move_base.wait_for_server()
         rospy.loginfo("Done")
-            
+
     def drivingToWormhole(self, location, wormhole):
         #We need to do driving to get to the next wormhole
         #print pos
@@ -357,7 +375,7 @@ class MultiMapNavigationNavigator():
                 return None;
 
             self.target_elevator(location["floor"], wormhole["name"]) # call elevator to current floor
-         
+
         angle = 0
         radius = 0
 
@@ -381,10 +399,10 @@ class MultiMapNavigationNavigator():
         msg.target_pose.pose.position.y = pos[1]
         msg.target_pose.pose.position.z = 0
         quat = tf.transformations.quaternion_from_euler(0, 0, angle)
+        msg.target_pose.pose.orientation.w = quat[3]
         msg.target_pose.pose.orientation.x = quat[0]
         msg.target_pose.pose.orientation.y = quat[1]
         msg.target_pose.pose.orientation.z = quat[2]
-        msg.target_pose.pose.orientation.w = quat[3]
 
         wasGoalSuccessful = self.go_to_goal(msg, radius)
         if not wasGoalSuccessful:
