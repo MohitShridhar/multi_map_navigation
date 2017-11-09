@@ -5,6 +5,8 @@ maps:
     north_angle: 0.0
   - name: dining-room
     north_angle: 0.0
+  - name: kitchen 
+    north_angle: 0.0
 
 wormholes:
   - name: living-room
@@ -22,4 +24,12 @@ wormholes:
       - map: living-room
         position: [1.47, 1.30]
       - map: kitchen
+        position: [1.5, 2.5]
+  - name: kitchen
+    type: custom
+    radius: .5
+    locations:
+      - map: living-room
+        position: [1.5, 2.5]
+      - map: dining-room
         position: [1.5, 2.5]
