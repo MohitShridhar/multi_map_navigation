@@ -63,9 +63,14 @@ class MultiMapNavigationNavigator():
     def plotGraph(self):
         pos = nx.spring_layout(self.graph)
         nx.draw(self.graph, pos, with_labels=True)
-        #node_labels = nx.get_node_attributes(self.graph,'x')
-        #nx.draw_networkx_labels(self.graph, pos, labels = node_labels)
+        #y_node_labels = nx.get_node_attributes(self.graph,'x')
+        #x_node_labels = nx.get_node_attributes(self.graph,'y')
+        #edge_labels=nx.draw_networkx_edge_labels(self.graph,pos=nx.spring_layout(G))
+        #nx.draw_networkx_labels(self.graph, pos, labels = edge_labels)
         plt.show()
+
+    def resetGraph(self):
+        rospy.loginfo("Reseting Graph")
 
     def cancel_cb(self, msg):
         self.preempt_goal = msg.data
@@ -74,14 +79,6 @@ class MultiMapNavigationNavigator():
         #print goal.goal_map
         #Node of current_map must match with current pose
         robot_pos = self.manager.get_robot_position()
-
-        self.graph.node[self.manager.current_map]['x'] = robot_pos[0]
-        self.graph.node[self.manager.current_map]['y'] = robot_pos[1]
-
-        #Node of end goal must match with goal pose
-        self.graph.node[goal.goal_map]['x'] = goal.target_pose.pose.position.x
-        self.graph.node[goal.goal_map]['y'] = goal.target_pose.pose.position.y
-
 
         #The cost of moving through a wormhole is nothing. In the future, this
         #could be non-zero if there is an object such as a door or elevator that
@@ -95,9 +92,22 @@ class MultiMapNavigationNavigator():
                 node_pose = [self.graph.node[w["name"]]['x'],  self.graph.node[w["name"]]['y']]
                 self.graph.add_edge(w["name"],l["map"], weight = calc_distance(node_pose, l["position"]))
 
+        self.graph.node[self.manager.current_map]['x'] = robot_pos[0]
+        self.graph.node[self.manager.current_map]['y'] = robot_pos[1]
+
+        #Node of end goal must match with goal pose
+        self.graph.node[goal.goal_map]['x'] = goal.target_pose.pose.position.x
+        self.graph.node[goal.goal_map]['y'] = goal.target_pose.pose.position.y
+
         self.graph.add_edge(goal.goal_map,"end",weight = 0)
         self.plotGraph()
-        path = nx.astar_path(self.graph, self.manager.current_map, goal.goal_map)
+
+        try:
+            path = nx.astar_path(self.graph, "start", "end")
+        except:
+            rospy.logerr("PAth NOT FOUND")
+            return None
+
         print "PATH FOUND", path , " from " , self.manager.current_map , " to " , goal.goal_map
 
         offset = []
@@ -109,7 +119,6 @@ class MultiMapNavigationNavigator():
         state = 0
 
         while (goal.goal_map != self.manager.current_map):
-            print goal.goal_map , self.manager.current_map
             #wormhole
             name = path[0][path[0].find("_") + 1:]
             #wormhole = None
@@ -119,6 +128,7 @@ class MultiMapNavigationNavigator():
             print "looking for" , self.manager.current_map ,"in" , wormhole["locations"]
             for w in wormhole["locations"]:
               if len(path)> 1:
+                  print path[1]
                   if path[1] is w["map"]:
                       location = w
             pos = location["position"]
