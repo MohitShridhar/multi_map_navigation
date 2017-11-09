@@ -110,6 +110,9 @@ class MultiMapNavigationNavigator():
 
         print "PATH FOUND", path , " from " , self.manager.current_map , " to " , goal.goal_map
 
+        #removing start and end
+        path = path[1:-1]
+
         offset = []
         old_north = 0.0
 
@@ -127,8 +130,9 @@ class MultiMapNavigationNavigator():
                     wormhole = i
             print "looking for" , self.manager.current_map ,"in" , wormhole["locations"]
             for w in wormhole["locations"]:
+              print w
+              print "error", path[1]
               if len(path)> 1:
-                  print path[1]
                   if path[1] is w["map"]:
                       location = w
             pos = location["position"]
