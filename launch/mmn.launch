@@ -23,7 +23,7 @@
   <include file="$(find multi_map_navigation)/launch/2dnav.launch">
         <arg name="robot" value="$(arg robot)" />
         <arg name="robot_env" value="$(arg robot_env)" />
-        <arg name="nav_mode" value="multi_map" />
+        <arg name="nav_mode" value="multimap" />
   </include>
 
   <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="my_multi_map_navigation" output="screen">
