@@ -371,7 +371,7 @@ class MultiMapNavigationNavigator():
         rospy.loginfo("%s pretend to publsh ", msg.pose.pose)
         self.pose_pub.publish(msg)
 
-        #rospy.sleep(2) #FIXME: come up with an alternative approach to know when AMCL is done
+        rospy.sleep(3) #FIXME: come up with an alternative approach to know when AMCL is done
 
         #NOT SO SURE HOW IT WORKS
         rospy.loginfo("Wait for movebase")
