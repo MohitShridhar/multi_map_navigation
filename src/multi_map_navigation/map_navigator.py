@@ -135,9 +135,8 @@ class MultiMapNavigationNavigator():
             for w in wormhole["locations"]:
               print w
               print "error", path[1]
-              if len(path)> 1:
-                  if path[1] is w["map"]:
-                      location = w
+              if path[1] is w["map"]:
+                  location = w
             pos = location["position"]
             print "Send Position " , pos
             position_pose = PoseStamped()
