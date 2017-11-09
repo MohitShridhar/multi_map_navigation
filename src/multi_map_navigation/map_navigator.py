@@ -71,6 +71,8 @@ class MultiMapNavigationNavigator():
 
     def resetGraph(self):
         rospy.loginfo("Reseting Graph")
+        self.graph.remove_node("start")
+        self.graph.remove_node("end")
 
     def cancel_cb(self, msg):
         self.preempt_goal = msg.data
@@ -85,6 +87,7 @@ class MultiMapNavigationNavigator():
         #could slow the robot's motion.
 
         #Create the graph for each of the wormholes
+        self.resetGraph()
         self.graph.add_edge("start",self.manager.current_map,weight = 0)
 
         for w in self.manager.wormholes:
