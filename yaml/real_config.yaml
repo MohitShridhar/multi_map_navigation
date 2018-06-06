@@ -1,0 +1,32 @@
+start_map:  brsu-c025-sim
+
+maps:
+  - name: brsu-c025-sim
+    north_angle: 0.0
+  - name: brsu-c025
+    north_angle: 0.0
+  - name: unknown
+    north_angle: 0.0
+
+wormholes:
+  - name: brsu-c025-sim
+    type: custom
+    radius: .5
+    locations:
+      - map: brsu-c025
+        position: [1.47, 1.30]
+      - map: unknown
+        position: [2.0, 2.0]
+  - name: unknown
+    type: custom
+    radius: .5
+    locations:
+      - map: brsu-c025-sim
+        position: [2.0, 2.0]
+
+  - name: brsu-c025
+    type: custom
+    radius: .5
+    locations:
+      - map: brsu-c025-sim
+        position: [1.47, 1.30]

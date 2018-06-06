@@ -1,0 +1,51 @@
+start_map: shelf
+
+maps:
+  - name: kitchen
+    north_angle: 1.5707963267948966
+  - name: shelf
+    north_angle: 1.5707963267948966
+  - name: dining-room
+    north_angle: 1.5707963267948966
+  - name: living-room
+    north_angle: 1.5707963267948966
+  - name: exit-hallway
+    north_angle: 1.5707963267948966
+
+wormholes:
+  - name: kitchen
+    type: normal
+    radius: 0.5
+    locations:
+      - map: exit-hallway
+        position: [9.511, -1.321]
+      - map: living-room
+        position: [5.452, -2.735]
+  - name: living-room
+    type: normal
+    radius: 0.5
+    locations:
+      - map: kitchen
+        position: [5.452, -2.735]
+      - map: shelf
+        position: [0.359, 0.067]
+      - map: dining-room
+        position: [5.709, -3.406]
+  - name: dining-room
+    type: normal
+    radius: 0.5
+    locations:
+      - map: living-room
+        position: [5.709, -3.406]
+  - name: shelf
+    type: normal
+    radius: 0.5
+    locations:
+      - map: living-room
+        position: [0.359, 0.067]
+  - name: exit-hallway
+    type: normal
+    radius: 0.5
+    locations:
+      - map: kitchen
+        position: [9.511, -1.321]
