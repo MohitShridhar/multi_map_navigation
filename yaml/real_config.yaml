@@ -1,35 +1,32 @@
-start_map: living-room
+start_map:  brsu-c025-sim
 
 maps:
-  - name: living-room
+  - name: brsu-c025-sim
     north_angle: 0.0
-  - name: dining-room
+  - name: brsu-c025
     north_angle: 0.0
-  - name: kitchen 
+  - name: unknown
     north_angle: 0.0
 
 wormholes:
-  - name: living-room
+  - name: brsu-c025-sim
     type: custom
     radius: .5
     locations:
-      - map: dining-room
+      - map: brsu-c025
         position: [1.47, 1.30]
-      - map: kitchen
-        position: [1.5, 2.5]
-  - name: dining-room
+      - map: unknown
+        position: [2.0, 2.0]
+  - name: unknown
     type: custom
     radius: .5
     locations:
-      - map: living-room
+      - map: brsu-c025-sim
+        position: [2.0, 2.0]
+
+  - name: brsu-c025
+    type: custom
+    radius: .5
+    locations:
+      - map: brsu-c025-sim
         position: [1.47, 1.30]
-      - map: kitchen
-        position: [1.5, 2.5]
-  - name: kitchen
-    type: custom
-    radius: .5
-    locations:
-      - map: living-room
-        position: [1.5, 2.5]
-      - map: dining-room
-        position: [1.5, 2.5]

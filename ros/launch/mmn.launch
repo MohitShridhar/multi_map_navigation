@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<launch>
+  <master auto="start"/>
+  <arg name="robot" default="$(optenv ROBOT !!ROBOT NOT SET!!)" />
+  <arg name="robot_env" default="$(optenv ROBOT_ENV !!ROBOT_ENV NOT SET!!)" />
+
+  <!-- Map_server-->
+  <!--arg name="initial_map" default="living-room" /-->
+  <!--node name="multi_map_server" pkg="multi_map_server" type="multi_map_server" args="$(arg initial_map)"/-->
+
+  <!-- Name - Must be consistent with spawn name [To edit]:  -->
+  <!-- Launch elevator manager -->
+  <node pkg="multi_map_navigation" type="elevator_controller.py" name="elevator_blast_manager" output="screen"/>
+  <node pkg="multi_map_navigation" type="custom_controller.py" name="custom_transition_manager" output="screen"/>
+
+  <node pkg="multi_map_navigation" type="multi_map_navigation_manager.py" name="my_multi_map_navigation" output="screen">
+      <param name="definition_file" value="$(find multi_map_navigation)/yaml/elevator_config.yaml" />
+      <param name="base_frame" value="base_link"/>
+      <param name="transition_types" value="custom elevator_blast" />
+  </node>
+</launch>

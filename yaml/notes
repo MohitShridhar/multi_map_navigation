@@ -1,0 +1,11 @@
+#Issue
+Mongo db port fails
+
+#solution
+
+Change port
+
+
+#Charging maps by hand :)
+
+roslaunch multi_map_navigation add_map_mongodb.launch map_file:=/home/jose/ROS/AtHome/src/personal/multi_mapping/multi_map_navigation/maps/partial-c069-maps/shelf/map.yaml  map_name:=shelf map_frame_id:=map
